@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>チェーンレジ — 暗号資産お会計ツール</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap');
+:root{
+  --bg:#FFFFFF; --card:#FFFFFF; --ink:#20313D; --dim:#7C8B96;
+  --sky:#00A3E0; --sky-press:#008BC0; --sky-deep:#006C99;
+  --soft:#EAF6FC; --line:#D3E9F4; --ok:#149D6F; --err:#C0392B;
+  --stage1:#0090D4; --stage2:#005E92; --stage-dim:#BFE4F5;
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{margin:0;background:#F2F8FC;color:var(--ink);
+  font-family:"Meiryo","メイリオ","M PLUS 1p",system-ui,sans-serif;
+  display:flex;justify-content:center;}
+.num{font-feature-settings:'tnum';font-variant-numeric:tabular-nums;letter-spacing:.01em;}
+.mono{font-family:ui-monospace,"Consolas","Menlo",monospace;}
+.app{width:100%;max-width:430px;height:100vh;height:100dvh;background:var(--bg);
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:background .45s ease;}
+.app.stage{background:linear-gradient(180deg,var(--stage1),var(--stage2));}
+.top{padding:calc(env(safe-area-inset-top) + 14px) 20px 0;transition:color .45s;}
+.brandrow{display:flex;align-items:center;gap:10px;min-height:30px;}
+.brand{font-weight:bold;font-size:17px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+.net{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;
+  color:var(--dim);font-weight:bold;white-space:nowrap;}
+.net .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);
+  box-shadow:0 0 0 0 rgba(20,157,111,.5);animation:pulse 2.2s infinite;}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(20,157,111,0)}100%{box-shadow:0 0 0 0 rgba(20,157,111,0)}}
+.seg{margin:12px 0 0;position:relative;display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:3px;}
+.seg .thumb{position:absolute;top:3px;bottom:3px;width:calc(20% - 3px);left:3px;
+  background:#fff;border-radius:9px;box-shadow:0 1px 5px rgba(0,108,153,.18);
+  transition:transform .28s cubic-bezier(.3,1,.3,1);}
+.seg button{position:relative;z-index:1;border:0;background:none;padding:9px 0;
+  font-family:inherit;font-size:12.5px;font-weight:bold;color:var(--dim);cursor:pointer;
+  transition:color .2s;border-radius:9px;}
+.seg button.on{color:var(--sky-deep);}
+/* 相場チャート */
+.mchips{display:flex;gap:6px;margin-bottom:10px;align-items:center;}
+.mchip{border:1px solid var(--line);background:#fff;color:var(--dim);border-radius:8px;
+  padding:5px 12px;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;}
+.mchip.on{background:var(--sky);border-color:var(--sky);color:#fff;}
+.mupd{font-size:11px;color:var(--dim);margin-left:auto;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media (max-width:360px){.mgrid{grid-template-columns:1fr;}}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 12px;box-shadow:0 1px 3px rgba(0,108,153,.06);}
+.mhead{display:flex;align-items:baseline;gap:7px;margin-bottom:4px;flex-wrap:wrap;}
+.msym{font-size:13px;font-weight:bold;}
+.mprice{font-size:12px;font-weight:bold;margin-left:auto;}
+.mchg{font-size:11px;font-weight:bold;}
+.mchg.up{color:var(--ok);}.mchg.down{color:var(--err);}
+.mcard canvas{width:100%;height:110px;display:block;}
+.merr{font-size:11.5px;color:var(--err);padding:20px 0;text-align:center;}
+.app.stage .top{color:#fff;}
+.app.stage .seg{visibility:hidden;}
+.app.stage .net{color:var(--stage-dim);}
+main{flex:1;min-height:0;display:flex;flex-direction:column;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:18px 20px calc(env(safe-area-inset-bottom) + 24px);}
+main > *{flex-shrink:0;}
+.banner{background:#FFF7E8;border:1px solid #F0DCB0;border-radius:12px;
+  padding:11px 14px;font-size:13px;line-height:1.7;margin-bottom:12px;}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;text-align:left;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;gap:6px;transition:transform .08s;
+  box-shadow:0 1px 3px rgba(0,108,153,.06);}
+.tile:active{transform:scale(.97);background:var(--soft);}
+.tile .nm{font-size:14px;font-weight:bold;line-height:1.35;color:var(--ink);}
+.tile .pr{font-size:15px;font-weight:bold;color:var(--sky-deep);}
+.tile.custom{border-style:dashed;color:var(--sky-deep);font-weight:bold;font-size:14px;
+  justify-content:center;align-items:center;flex-direction:row;background:none;box-shadow:none;}
+.order{margin-top:14px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:4px 16px;}
+.oline{display:flex;align-items:center;gap:12px;padding:12px 0;font-size:14px;
+  border-bottom:1px solid var(--soft);}
+.oline:last-child{border-bottom:0;}
+.oline .nm{flex:1;}
+.oline .q{color:var(--dim);font-weight:bold;}
+.minus{width:30px;height:30px;border-radius:10px;border:1px solid var(--line);
+  background:var(--soft);color:var(--sky-deep);font-size:18px;cursor:pointer;line-height:1;}
+.dock{margin-top:auto;padding-top:16px;}
+.dockrow{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px 6px;}
+.docklb{font-size:12px;letter-spacing:.14em;color:var(--dim);font-weight:bold;}
+.dockv{font-size:36px;font-weight:bold;}
+.dockv .yen{font-size:20px;color:var(--dim);margin-right:2px;font-weight:normal;}
+.cta{width:100%;border:0;border-radius:14px;background:var(--sky);color:#fff;
+  font-family:inherit;font-size:16px;font-weight:bold;letter-spacing:.1em;
+  padding:16px;cursor:pointer;transition:transform .08s, background .2s;
+  box-shadow:0 4px 14px -4px rgba(0,163,224,.5);}
+.cta:active{transform:scale(.985);background:var(--sky-press);}
+.cta:disabled{background:#C9DCE7;box-shadow:none;cursor:default;}
+.cta.ghosty{background:none;box-shadow:none;color:var(--stage-dim);
+  text-decoration:underline;font-weight:normal;font-size:14px;padding:12px;letter-spacing:.04em;}
+.stagewrap{flex:1;display:flex;flex-direction:column;align-items:center;color:#fff;
+  animation:fadein .4s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.curchips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;}
+.chip{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);
+  color:#fff;border-radius:99px;padding:7px 15px;font-family:inherit;font-size:13px;
+  font-weight:bold;cursor:pointer;transition:background .15s;}
+.chip.on{background:#fff;color:var(--sky-deep);border-color:#fff;}
+.amount-hero{margin:4px 0 6px;font-size:56px;font-weight:bold;line-height:1;text-align:center;
+  word-break:break-all;padding:0 10px;}
+.amount-hero.crypto{font-size:38px;}
+.amount-hero .yen{font-size:30px;color:var(--stage-dim);margin-right:4px;font-weight:normal;}
+.amount-hero .unit{font-size:20px;color:var(--stage-dim);margin-left:6px;font-weight:bold;}
+.rate-sub{font-size:12.5px;color:var(--stage-dim);text-align:center;line-height:1.8;}
+.stage-sub{font-size:12px;letter-spacing:.3em;color:var(--stage-dim);font-weight:bold;}
+.qrframe{position:relative;margin:18px 0 14px;padding:16px;}
+.qrcardw{background:#fff;border-radius:18px;padding:16px;min-width:228px;min-height:228px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 22px 50px -16px rgba(0,40,60,.55);}
+.qrcardw img,.qrcardw canvas{display:block;}
+.qrloading{color:var(--dim);font-size:13px;text-align:center;line-height:1.8;padding:10px;}
+.tick{position:absolute;width:22px;height:22px;border:3px solid #fff;opacity:.9;}
+.tick.tl{top:0;left:0;border-right:0;border-bottom:0;border-radius:6px 0 0 0;}
+.tick.tr{top:0;right:0;border-left:0;border-bottom:0;border-radius:0 6px 0 0;}
+.tick.bl{bottom:0;left:0;border-right:0;border-top:0;border-radius:0 0 0 6px;}
+.tick.br{bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 6px 0;}
+.watch{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--stage-dim);
+  text-align:center;padding:0 16px;}
+.watch .dot{width:8px;height:8px;border-radius:50%;background:#fff;
+  animation:beat 1.6s ease-in-out infinite;flex-shrink:0;}
+.watch.err .dot{background:#FFC9C0;animation:none;}
+@keyframes beat{50%{opacity:.25;transform:scale(.8)}}
+.addr-chip{margin-top:12px;display:flex;align-items:center;gap:8px;max-width:100%;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+  border-radius:10px;padding:9px 12px;font-size:12px;color:#E8F6FE;}
+.addr-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.copybtn{border:0;background:none;color:#fff;font-family:inherit;font-size:12px;
+  font-weight:bold;cursor:pointer;text-decoration:underline;flex-shrink:0;padding:2px;}
+.stage-note{margin-top:14px;font-size:12px;color:var(--stage-dim);text-align:center;
+  line-height:1.9;max-width:310px;}
+.stamp{width:132px;height:132px;border:6px solid #fff;border-radius:50%;
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:60px;font-weight:bold;margin:38px 0 8px;
+  transform:rotate(-8deg) scale(2.6);opacity:0;
+  transition:transform .3s cubic-bezier(.2,1.5,.4,1),opacity .18s;}
+.stamp.on{transform:rotate(-8deg) scale(1);opacity:1;}
+.paid-lbl{color:#CFF7E8;font-weight:bold;letter-spacing:.2em;font-size:13px;margin-top:2px;}
+.paid-meta{color:var(--stage-dim);font-size:12px;margin-top:6px;text-align:center;line-height:1.8;}
+.paid-meta a{color:#fff;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;display:flex;flex-direction:column;gap:12px;margin-bottom:14px;
+  box-shadow:0 1px 3px rgba(0,108,153,.06);}
+label{font-size:11px;color:var(--dim);letter-spacing:.12em;font-weight:bold;display:block;margin-bottom:6px;}
+input,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;
+  font-size:16px;font-family:inherit;background:#F7FBFE;color:var(--ink);}
+input:focus,select:focus{outline:2px solid var(--sky);background:#fff;}
+.save{border:0;border-radius:10px;background:var(--sky);color:#fff;font-family:inherit;
+  font-weight:bold;padding:13px;font-size:15px;cursor:pointer;letter-spacing:.12em;}
+.list{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:2px 16px;
+  box-shadow:0 1px 3px rgba(0,108,153,.06);}
+.lrow{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--soft);}
+.lrow:last-child{border-bottom:0;}
+.lrow .nm{flex:1;font-size:15px;}
+.lrow .sub{color:var(--dim);font-size:12.5px;}
+.curbadge{font-size:10px;font-weight:bold;color:var(--sky-deep);background:var(--soft);
+  border-radius:6px;padding:2px 7px;}
+.act{border:0;background:none;font-family:inherit;font-size:13px;font-weight:bold;
+  cursor:pointer;padding:4px 2px;white-space:nowrap;}
+.sumrow{display:flex;justify-content:space-between;align-items:baseline;padding:2px 4px 14px;}
+.note{font-size:12px;color:var(--dim);line-height:1.9;}
+a.txlink{color:var(--sky-deep);font-size:12px;font-weight:bold;}
+.status-ok{color:var(--ok);font-weight:bold;font-size:13px;}
+.status-err{color:var(--err);font-weight:bold;font-size:13px;}
+.exlink{display:flex;align-items:center;gap:12px;text-decoration:none;
+  background:var(--soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 14px;color:var(--ink);transition:transform .08s;}
+.exlink:active{transform:scale(.98);}
+.exlink .ic{width:38px;height:38px;border-radius:10px;background:var(--sky);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;flex-shrink:0;}
+.exlink .tx{flex:1;min-width:0;}
+.exlink .t1{font-size:14px;font-weight:bold;display:block;}
+.exlink .t2{font-size:11.5px;color:var(--dim);margin-top:2px;display:block;}
+.exlink .arrow{color:var(--sky-deep);font-weight:bold;}
+.overlay{position:fixed;inset:0;background:rgba(10,40,58,.45);display:flex;
+  align-items:flex-end;justify-content:center;z-index:20;animation:fadein .2s;}
+.sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;max-width:430px;
+  padding:20px 18px calc(env(safe-area-inset-bottom) + 20px);}
+.padnum{font-size:38px;font-weight:bold;text-align:right;background:#F7FBFE;
+  border:1px solid var(--line);border-radius:12px;padding:12px 16px;}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0;}
+.key{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  font-size:22px;font-weight:bold;font-family:inherit;
+  padding:15px 0;cursor:pointer;color:var(--ink);}
+.key:active{background:var(--soft);}
+button:focus-visible{outline:3px solid var(--sky-deep);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <div class="brandrow">
+      <span class="brand" id="hd-shop">チェーンレジ</span>
+      <span class="net"><span class="dot"></span><span id="hd-net">デモ</span></span>
+    </div>
+    <div class="seg" id="seg">
+      <div class="thumb" id="thumb"></div>
+      <button data-tab="register" class="on">お会計</button>
+      <button data-tab="products">商品</button>
+      <button data-tab="history">売上</button>
+      <button data-tab="market">相場</button>
+      <button data-tab="settings">設定</button>
+    </div>
+  </div>
+  <main id="main"></main>
+</div>
+<div id="sheet-root"></div>
+
+<script>
+// ============ 定数 ============
+// JPYC（資金移動業・電子決済手段）公式コントラクト。全チェーン共通。
+// 出典: github.com/jpycoin / jpyc.co.jp 契約締結前交付書面
+const JPYC_TOKEN = "0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29";
+// USDT公式コントラクト（tether.to / 各公式エクスプローラーで確認済・6桁精度）
+const USDT_TOKEN = {
+  ethereum:  "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  polygon:   "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+  avalanche: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+};
+const JPYC_EX_URL = "https://jpyc.co.jp";
+const CHAINS = {
+  polygon:  { id:137,   name:"Polygon",   rpc:"https://polygon-rpc.com",               exp:"https://polygonscan.com/tx/", ncy:{name:"POL",symbol:"POL",decimals:18} },
+  ethereum: { id:1,     name:"Ethereum",  rpc:"https://ethereum-rpc.publicnode.com",   exp:"https://etherscan.io/tx/",    ncy:{name:"Ether",symbol:"ETH",decimals:18} },
+  avalanche:{ id:43114, name:"Avalanche", rpc:"https://api.avax.network/ext/bc/C/rpc", exp:"https://snowtrace.io/tx/",    ncy:{name:"AVAX",symbol:"AVAX",decimals:18} },
+};
+const SOL_RPC = "https://api.mainnet-beta.solana.com";
+const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+const TABS = ["register","products","history","market","settings"];
+// 通貨定義: dec=オンチェーン最小単位の桁数, prec=表示桁数, cg=CoinGecko ID
+const CURR = {
+  jpyc:{ label:"JPYC", dec:18, prec:0, cg:null },
+  usdt:{ label:"USDT", dec:6,  prec:2, cg:"tether" },
+  eth: { label:"ETH",  dec:18, prec:6, cg:"ethereum" },
+  btc: { label:"BTC",  dec:8,  prec:8, cg:"bitcoin" },
+  sol: { label:"SOL",  dec:9,  prec:4, cg:"solana" },
+};
+
+// ============ 状態 ============
+let S = {
+  tab:"register", stage:"order", payCur:"jpyc",
+  settings:{ shop:"チェーンレジ", addr:"", chain:"polygon", btcAddr:"", solAddr:"", syncKey:"" },
+  products:[
+    {id:1,name:"ランチセット",price:900},{id:2,name:"日替わり定食",price:850},
+    {id:3,name:"コーヒー",price:400},{id:4,name:"生ビール",price:600},
+    {id:5,name:"デザート",price:450},{id:6,name:"お通し",price:300},
+  ],
+  cart:[], sales:[], padVal:"", lastPay:null, editId:null,
+};
+let watch = null;
+let qrTimer = null, qrCd = null; // QR画面のレート自動更新（15秒）とカウントダウン
+let RATES = { at:0, v:null }; // 円建てレートのキャッシュ
+const fmt = n => Number(n||0).toLocaleString("ja-JP");
+const tS = ts => new Date(ts).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+const dS = ts => new Date(ts).toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"});
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const total = () => S.cart.reduce((a,l)=>a+l.price*l.qty,0);
+const app = document.getElementById("app"), main = document.getElementById("main");
+
+function availCurs(){
+  const a = [];
+  if(S.settings.addr) a.push("jpyc","usdt","eth");
+  if(S.settings.btcAddr) a.push("btc");
+  if(S.settings.solAddr) a.push("sol");
+  return a;
+}
+
+// ============ レート取得（CoinGecko → Binance+為替 の順で自動フォールバック） ============
+let FX = { at:0, v:null }; // USD→JPY（10分キャッシュ）
+async function getUsdJpy(){
+  if(FX.v && Date.now()-FX.at < 600000) return FX.v;
+  try{
+    const r = await fetch("https://open.er-api.com/v6/latest/USD",{cache:"no-store"});
+    const j = await r.json();
+    if(j && j.rates && j.rates.JPY){ FX = {at:Date.now(), v:j.rates.JPY}; return FX.v; }
+  }catch(e){}
+  const r = await fetch("https://api.frankfurter.app/latest?from=USD&to=JPY",{cache:"no-store"});
+  const j = await r.json();
+  if(j && j.rates && j.rates.JPY){ FX = {at:Date.now(), v:j.rates.JPY}; return FX.v; }
+  throw new Error("fx failed");
+}
+async function binancePx(sym){
+  const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+sym,{cache:"no-store"});
+  if(!r.ok) throw new Error("binance http "+r.status);
+  const j = await r.json();
+  const p = Number(j.price);
+  if(!(p>0)) throw new Error("binance price");
+  return p;
+}
+async function fetchRates(force){
+  if(!force && RATES.v && Date.now()-RATES.at < 60000) return RATES.v;
+  // 1) CoinGecko
+  try{
+    const url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,tether&vs_currencies=jpy";
+    const r = await fetch(url,{cache:"no-store"});
+    if(!r.ok) throw new Error("rate http "+r.status);
+    const j = await r.json();
+    const v = { btc:j.bitcoin?.jpy, eth:j.ethereum?.jpy, sol:j.solana?.jpy, usdt:j.tether?.jpy };
+    if(!v.btc || !v.eth || !v.sol || !v.usdt) throw new Error("rate missing");
+    RATES = { at:Date.now(), v };
+    return v;
+  }catch(e){}
+  // 2) Binance価格 × USD/JPY（USDT/USDはUSDC/USDTペアから算出）
+  const fx = await getUsdJpy();
+  const [b,e2,s2,uc] = await Promise.all([
+    binancePx("BTCUSDT"), binancePx("ETHUSDT"), binancePx("SOLUSDT"), binancePx("USDCUSDT")]);
+  const usdtJpy = fx / uc;
+  const v = { btc:b*usdtJpy, eth:e2*usdtJpy, sol:s2*usdtJpy, usdt:usdtJpy };
+  RATES = { at:Date.now(), v };
+  return v;
+}
+// 円→暗号資産（表示桁で切り上げ：受け取り不足を防ぐ）
+function convert(jpy, cur){
+  const c = CURR[cur];
+  const rate = RATES.v[cur];
+  const f = Math.pow(10, c.prec);
+  const amtStr = (Math.ceil(jpy/rate*f - 1e-9)/f).toFixed(c.prec);
+  return { amtStr, rate, units: decToUnits(amtStr, c.dec) };
+}
+function decToUnits(str, dec){
+  const [i, fr=""] = String(str).split(".");
+  return BigInt(i||"0") * 10n**BigInt(dec) + BigInt((fr+"0".repeat(dec)).slice(0,dec));
+}
+
+// ============ 永続化（この端末 + サーバー同期） ============
+const API_URL = "api.php";
+const STORE_KEY = "jpyc-pos-v2";
+async function serverSave(payload){
+  if(!S.settings.syncKey) return "off";
+  try{
+    const r = await fetch(API_URL,{method:"POST",
+      headers:{"Content-Type":"application/json","X-Sync-Key":S.settings.syncKey},
+      body: payload});
+    return r.ok ? "ok" : "err";
+  }catch(e){ return "err"; }
+}
+async function serverLoad(){
+  if(!S.settings.syncKey) return null;
+  try{
+    const r = await fetch(API_URL,{headers:{"X-Sync-Key":S.settings.syncKey}, cache:"no-store"});
+    if(r.status===204 || !r.ok) return null;
+    return await r.text();
+  }catch(e){ return null; }
+}
+function setSyncStatus(state){
+  const el = document.getElementById("sync-status");
+  if(!el) return;
+  if(state==="ok") el.innerHTML = '<span class="status-ok">サーバーに保存済（'+tS(Date.now())+'）</span>';
+  else if(state==="err") el.innerHTML = '<span class="status-err">サーバーに保存できませんでした。api.phpの設置と合言葉を確認してください。この端末には保存されています。</span>';
+  else el.innerHTML = '<span class="note">合言葉が未設定のため、この端末のみに保存中です。</span>';
+}
+async function persist(){
+  const payload = JSON.stringify({
+    settings:S.settings, products:S.products, sales:S.sales.slice(0,300), updatedAt:Date.now(),
+  });
+  let localOk = false;
+  try{ localStorage.setItem(STORE_KEY, payload); localOk = true; }catch(e){}
+  try{ if(window.storage && window.storage.set){ await window.storage.set(STORE_KEY, payload); localOk = true; } }catch(e){}
+  const sv = await serverSave(payload);
+  setSyncStatus(sv);
+  return localOk || sv==="ok";
+}
+async function restore(){
+  const apply = v => {
+    try{
+      const d = JSON.parse(v);
+      if(d.settings) S.settings = {...S.settings,...d.settings};
+      if(Array.isArray(d.products)) S.products = d.products;
+      if(Array.isArray(d.sales)) S.sales = d.sales;
+      return d.updatedAt || 0;
+    }catch(e){ return -1; }
+  };
+  let local = null;
+  try{ local = localStorage.getItem(STORE_KEY); }catch(e){}
+  if(local == null){
+    try{ if(window.storage && window.storage.get){
+      const r = await window.storage.get(STORE_KEY);
+      if(r && r.value != null) local = r.value;
+    }}catch(e){}
+  }
+  const localTs = local ? apply(local) : 0;
+  const remote = await serverLoad();
+  if(remote){
+    try{
+      const rd = JSON.parse(remote);
+      if((rd.updatedAt||0) > localTs){
+        apply(remote);
+        try{ localStorage.setItem(STORE_KEY, remote); }catch(e){}
+      }
+    }catch(e){}
+  }
+}
+
+// ============ 支払い監視 ============
+function stopWatch(){ if(watch){ clearInterval(watch.timer); watch = null; } }
+function setWatch(text, isErr){
+  const w = document.getElementById("watch");
+  const t = document.getElementById("watch-text");
+  if(w && t){ t.textContent = text; w.classList.toggle("err", !!isErr); }
+}
+function newWatch(intervalMs, fn){
+  stopWatch();
+  const st = { ticking:false, ticks:0 };
+  st.timer = setInterval(async ()=>{
+    if(st.ticking || watch !== st) return;
+    st.ticking = true;
+    try{ await fn(st); setWatch("入金を待っています", false); }
+    catch(e){ setWatch("接続エラー（自動で再試行します）", true); }
+    finally{ st.ticking = false; }
+  }, intervalMs);
+  watch = st;
+  return st;
+}
+
+// ERC-20（JPYC / USDT）: Transferログの完全一致 + 残高差分の保険
+// ERC-20（JPYC / USDT）: Transferログの一致 + 残高差分の保険
+// pay = {list:[受理する着金額(BigInt)…], min:最小額} — レート更新のたびに額が追加される
+function watchErc20(tokenAddr, pay, extra){
+  const cfg = CHAINS[S.settings.chain];
+  const merchant = S.settings.addr;
+  const provider = new ethers.JsonRpcProvider(cfg.rpc, cfg.id, {staticNetwork:true});
+  const erc20 = new ethers.Contract(tokenAddr, ["function balanceOf(address) view returns (uint256)"], provider);
+  let lastBlock = 0, startBal = null;
+  newWatch(4000, async (st)=>{
+    const latest = await provider.getBlockNumber();
+    if(!lastBlock) lastBlock = latest - 1;
+    if(startBal === null) startBal = await erc20.balanceOf(merchant);
+    if(latest > lastBlock){
+      const from = Math.max(lastBlock - 1, latest - 900);
+      const logs = await provider.getLogs({
+        address: tokenAddr, fromBlock: from, toBlock: latest,
+        topics: [TRANSFER_TOPIC, null, ethers.zeroPadValue(merchant, 32)],
+      });
+      for(const log of logs){
+        const v = BigInt(log.data);
+        if(pay.list.some(x=>x===v)){ onPaid(cfg.exp + log.transactionHash, extra); return; }
+      }
+      lastBlock = latest;
+    }
+    if(++st.ticks % 4 === 0){
+      const bal = await erc20.balanceOf(merchant);
+      if(bal - startBal >= pay.min){ onPaid(null, extra); return; }
+    }
+  });
+}
+// ETH（ネイティブ・Ethereumメインネット）: 残高差分
+function watchEth(pay, extra){
+  const cfg = CHAINS.ethereum;
+  const merchant = S.settings.addr;
+  const provider = new ethers.JsonRpcProvider(cfg.rpc, cfg.id, {staticNetwork:true});
+  let startBal = null;
+  newWatch(5000, async ()=>{
+    if(startBal === null){ startBal = await provider.getBalance(merchant); return; }
+    const bal = await provider.getBalance(merchant);
+    if(bal - startBal >= pay.min) onPaid(null, extra);
+  });
+}
+// SOL: 残高差分（Solana公式RPC）
+function watchSol(pay, extra){
+  const addr = S.settings.solAddr;
+  const getBal = async ()=>{
+    const r = await fetch(SOL_RPC,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getBalance",params:[addr]})});
+    const j = await r.json();
+    if(j.error || !j.result) throw new Error("sol rpc");
+    return BigInt(j.result.value);
+  };
+  let startBal = null;
+  newWatch(5000, async ()=>{
+    if(startBal === null){ startBal = await getBal(); return; }
+    const bal = await getBal();
+    if(bal - startBal >= pay.min){
+      let url = null;
+      try{
+        const r = await fetch(SOL_RPC,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getSignaturesForAddress",params:[addr,{limit:1}]})});
+        const j = await r.json();
+        if(j.result && j.result[0]) url = "https://solscan.io/tx/"+j.result[0].signature;
+      }catch(e){}
+      onPaid(url, extra);
+    }
+  });
+}
+// BTC: 受取総額の差分（mempool.space・未承認含む）
+function watchBtc(pay, extra){
+  const addr = S.settings.btcAddr;
+  const getFunded = async ()=>{
+    const r = await fetch("https://mempool.space/api/address/"+addr,{cache:"no-store"});
+    if(!r.ok) throw new Error("btc api");
+    const j = await r.json();
+    return BigInt(j.chain_stats.funded_txo_sum) + BigInt(j.mempool_stats.funded_txo_sum);
+  };
+  let start = null;
+  newWatch(6000, async ()=>{
+    if(start === null){ start = await getFunded(); return; }
+    const now = await getFunded();
+    if(now - start >= pay.min){
+      let url = null;
+      try{
+        const r = await fetch("https://mempool.space/api/address/"+addr+"/txs",{cache:"no-store"});
+        const j = await r.json();
+        if(j && j[0]) url = "https://mempool.space/tx/"+j[0].txid;
+      }catch(e){}
+      onPaid(url, extra);
+    }
+  });
+}
+
+function onPaid(txUrl, extra){
+  stopWatch();
+  const pay = {
+    id: Date.now(), amount: total(), at: Date.now(),
+    cur: (extra && extra.cur) || "jpyc",
+    curAmt: (extra && extra.curAmt) || null,
+    rate: (extra && extra.rate) || null,
+    txUrl: txUrl || null,
+    lines: S.cart.map(l=>({name:l.name,price:l.price,qty:l.qty})),
+  };
+  S.lastPay = pay;
+  S.sales.unshift(pay);
+  persist();
+  S.stage = "done";
+  render();
+}
+
+// ============ レシートPDF ============
+function drawReceipt(p){
+  const W=360, pad=26, sc=2;
+  const lines = p.lines || [{name:"お会計",price:p.amount,qty:1}];
+  const cur = p.cur && p.cur!=="jpyc" ? CURR[p.cur] : null;
+  const H = 236 + lines.length*26 + 208 + (p.txUrl?22:0) + (cur?22:0);
+  const cv = document.createElement("canvas");
+  cv.width = W*sc; cv.height = H*sc;
+  const ctx = cv.getContext("2d"); ctx.scale(sc,sc);
+  const F = '"Meiryo","M PLUS 1p",sans-serif';
+  const M = '"Consolas","Menlo",monospace';
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
+  const dash = y => { ctx.save(); ctx.strokeStyle="#B9C6CE"; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke(); ctx.restore(); };
+  let y = 52;
+  ctx.fillStyle="#20313D"; ctx.textAlign="center"; ctx.font="bold 22px "+F;
+  ctx.fillText(S.settings.shop, W/2, y); y += 24;
+  ctx.font="12px "+F; ctx.fillStyle="#7C8B96";
+  ctx.fillText("御 計 算 書", W/2, y); y += 20;
+  ctx.fillText(dS(p.at)+"  "+tS(p.at), W/2, y); y += 20;
+  dash(y); y += 30;
+  ctx.fillStyle="#20313D";
+  for(const l of lines){
+    ctx.textAlign="left"; ctx.font="14px "+F;
+    ctx.fillText(l.name+(l.qty>1?"  ×"+l.qty:""), pad, y);
+    ctx.textAlign="right"; ctx.font="bold 14px "+F;
+    ctx.fillText("¥"+fmt(l.price*l.qty), W-pad, y); y += 26;
+  }
+  y += 4; dash(y); y += 34;
+  ctx.textAlign="left"; ctx.font="bold 15px "+F; ctx.fillText("合計", pad, y);
+  ctx.textAlign="right"; ctx.font="bold 26px "+F; ctx.fillText("¥"+fmt(p.amount), W-pad, y);
+  y += 18;
+  ctx.strokeStyle="#20313D"; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke(); y += 28;
+  const info = (k,v,mono)=>{
+    ctx.textAlign="left"; ctx.font="13px "+F; ctx.fillStyle="#7C8B96"; ctx.fillText(k,pad,y);
+    ctx.textAlign="right"; ctx.fillStyle="#20313D"; ctx.font="bold 12px "+(mono?M:F); ctx.fillText(v,W-pad,y);
+    y += 22;
+  };
+  info("お支払い方法", p.cur ? CURR[p.cur].label : "JPYC");
+  if(cur && p.curAmt) info("受領額", p.curAmt+" "+cur.label, true);
+  info("決済手数料", "¥0（当店負担なし）");
+  if(p.txUrl){
+    const id = p.txUrl.split("/").pop();
+    info("取引ID", id.slice(0,12)+"…"+id.slice(-8), true);
+  }
+  y += 12;
+  ctx.save(); ctx.translate(W/2, y+30); ctx.rotate(-.12); ctx.globalAlpha=.9;
+  ctx.strokeStyle="#006C99"; ctx.lineWidth=3.5;
+  ctx.beginPath(); ctx.arc(0,0,28,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle="#006C99"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.font="bold 30px "+F; ctx.fillText("済",0,2); ctx.restore();
+  y += 88;
+  ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+  ctx.fillStyle="#7C8B96"; ctx.font="12px "+F;
+  ctx.fillText("ご利用ありがとうございました", W/2, y);
+  return cv;
+}
+
+function canvasToPdf(cv){
+  const bin = atob(cv.toDataURL("image/jpeg",.92).split(",")[1]);
+  const img = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) img[i]=bin.charCodeAt(i);
+  const wPt=226, hPt=Math.round(wPt*cv.height/cv.width);
+  const enc = s => { const b=new Uint8Array(s.length);
+    for(let i=0;i<s.length;i++) b[i]=s.charCodeAt(i)&0xff; return b; };
+  const content = "q "+wPt+" 0 0 "+hPt+" 0 0 cm /Im0 Do Q";
+  const parts=[enc("%PDF-1.4\n")], off=[0];
+  let pos=parts[0].length;
+  const push = arr => { off.push(pos); for(const c of arr){ parts.push(c); pos+=c.length; } };
+  push([enc("1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n")]);
+  push([enc("2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n")]);
+  push([enc("3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 "+wPt+" "+hPt+
+    "]/Resources<</XObject<</Im0 4 0 R>>>>/Contents 5 0 R>>endobj\n")]);
+  push([enc("4 0 obj<</Type/XObject/Subtype/Image/Width "+cv.width+"/Height "+cv.height+
+    "/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length "+img.length+">>stream\n"),
+    img, enc("\nendstream\nendobj\n")]);
+  push([enc("5 0 obj<</Length "+content.length+">>stream\n"+content+"\nendstream\nendobj\n")]);
+  const xp = pos;
+  let x = "xref\n0 6\n0000000000 65535 f \n";
+  for(let i=1;i<=5;i++) x += String(off[i]).padStart(10,"0")+" 00000 n \n";
+  x += "trailer<</Size 6/Root 1 0 R>>\nstartxref\n"+xp+"\n%%EOF";
+  parts.push(enc(x));
+  const out = new Uint8Array(parts.reduce((a,p2)=>a+p2.length,0));
+  let o=0; for(const p2 of parts){ out.set(p2,o); o+=p2.length; }
+  return out;
+}
+
+async function sendReceiptPdf(p){
+  try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+  const blob = new Blob([canvasToPdf(drawReceipt(p))],{type:"application/pdf"});
+  const d = new Date(p.at);
+  const name = "receipt_"+d.getHours()+String(d.getMinutes()).padStart(2,"0")+".pdf";
+  const file = new File([blob], name, {type:"application/pdf"});
+  try{
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:S.settings.shop+" レシート"});
+      return;
+    }
+  }catch(e){}
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+
+// ============ 相場チャート（Binanceローソク足 × 為替で円換算） ============
+const MK_COINS = [
+  { key:"btc",  sym:"BTCUSDT",  label:"BTC" },
+  { key:"eth",  sym:"ETHUSDT",  label:"ETH" },
+  { key:"sol",  sym:"SOLUSDT",  label:"SOL" },
+  { key:"usdt", sym:"USDCUSDT", label:"USDT" },
+];
+let mkDays = 7;          // 期間: 1 / 7 / 30
+let mkTimer = null;      // 相場タブ表示中のみ60秒ごとに自動更新
+const MK_CACHE = {};     // {"key:days":{at,candles}}
+
+// Binance現物 → USDT無期限先物の順でフォールバック（参考コードと同方式）
+async function binanceKlines(sym, interval, limit){
+  const urls = [
+    "https://api.binance.com/api/v3/klines?symbol="+sym+"&interval="+interval+"&limit="+limit,
+    "https://fapi.binance.com/fapi/v1/klines?symbol="+sym+"&interval="+interval+"&limit="+limit,
+  ];
+  for(const u of urls){
+    try{
+      const r = await fetch(u,{cache:"no-store"});
+      if(!r.ok) continue;
+      const j = await r.json();
+      if(Array.isArray(j) && j.length) return j;
+    }catch(e){}
+  }
+  throw new Error("klines failed");
+}
+async function fetchOhlc(key, days){
+  const ck = key+":"+days;
+  const c = MK_CACHE[ck];
+  if(c && Date.now()-c.at < 60000) return c.candles;
+  const [interval, limit] = days===1 ? ["30m",48] : days===7 ? ["4h",42] : ["12h",60];
+  const coin = MK_COINS.find(x=>x.key===key);
+  const [raw, fx] = await Promise.all([binanceKlines(coin.sym, interval, limit), getUsdJpy()]);
+  let candles = raw.map(k=>({t:k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}));
+  if(key === "usdt"){
+    // USDC/USDT を反転して USDT/JPY 相当に（高値・安値は入れ替え）
+    candles = candles.map(k=>({t:k.t, o:fx/k.o, h:fx/k.l, l:fx/k.h, c:fx/k.c}));
+  } else {
+    // USDT建て → 円換算（USDT≈USDの参考値）
+    candles = candles.map(k=>({t:k.t, o:k.o*fx, h:k.h*fx, l:k.l*fx, c:k.c*fx}));
+  }
+  MK_CACHE[ck] = { at:Date.now(), candles };
+  return candles;
+}
+// コンパクトな円表記（軸ラベル用）
+function fmtJpyC(v){
+  if(v >= 1e8) return (v/1e8).toFixed(2)+"億";
+  if(v >= 1e6) return Math.round(v/1e4)+"万";
+  if(v >= 1e4) return (v/1e4).toFixed(1)+"万";
+  if(v >= 100) return String(Math.round(v));
+  return v.toFixed(2);
+}
+// 白背景×水色ローソク足の簡易チャート
+function drawMini(canvas, candles){
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  if(!W || !H) return;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const padR = 46, padT = 6, padB = 6;
+  const plotW = W - padR, plotH = H - padT - padB;
+  let min = Infinity, max = -Infinity;
+  candles.forEach(k=>{ min=Math.min(min,k.l); max=Math.max(max,k.h); });
+  const range = (max-min) || max*0.001 || 1;
+  const y = p => padT + (max-p)/range*plotH;
+  const cw = plotW/candles.length;
+  const bw = Math.max(1.5, cw*0.6);
+  // グリッド + 価格軸（3本）
+  ctx.font = "9px Meiryo, sans-serif";
+  for(let i=0;i<=2;i++){
+    const p = max - range*i/2, yy = y(p);
+    ctx.strokeStyle = "#EAF3F9"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(plotW,yy); ctx.stroke();
+    ctx.fillStyle = "#7C8B96";
+    ctx.fillText(fmtJpyC(p), plotW+4, yy+3);
+  }
+  // ローソク足（陽線: 濃い水色 / 陰線: 淡い水色）
+  candles.forEach((k,i)=>{
+    const x = i*cw + cw/2;
+    const up = k.c >= k.o;
+    const body = up ? "#00A3E0" : "#A9DBF2";
+    const line = up ? "#00A3E0" : "#7FC6E8";
+    ctx.strokeStyle = line; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, y(k.h)); ctx.lineTo(x, y(k.l)); ctx.stroke();
+    const yo = y(k.o), yc = y(k.c);
+    ctx.fillStyle = body;
+    ctx.fillRect(x-bw/2, Math.min(yo,yc), bw, Math.max(1, Math.abs(yc-yo)));
+    if(!up){ ctx.strokeRect(x-bw/2, Math.min(yo,yc), bw, Math.max(1, Math.abs(yc-yo))); }
+  });
+  // 最終価格ライン
+  const last = candles[candles.length-1];
+  const ly = y(last.c);
+  ctx.strokeStyle = "#006C99"; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(plotW,ly); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#006C99";
+  ctx.fillRect(plotW, ly-7, padR, 14);
+  ctx.fillStyle = "#fff"; ctx.font = "bold 9px Meiryo, sans-serif";
+  ctx.fillText(fmtJpyC(last.c), plotW+4, ly+3);
+}
+async function loadMarketCard(coin){
+  const card = document.getElementById("mk-"+coin.key);
+  if(!card) return;
+  try{
+    const candles = await fetchOhlc(coin.key, mkDays);
+    if(!document.getElementById("mk-"+coin.key)) return;
+    const last = candles[candles.length-1], first = candles[0];
+    const chg = (last.c-first.o)/first.o*100;
+    card.querySelector(".mprice").textContent =
+      "¥"+(last.c>=1000 ? fmt(Math.round(last.c)) : last.c.toFixed(2));
+    const ce = card.querySelector(".mchg");
+    ce.textContent = (chg>=0?"+":"")+chg.toFixed(2)+"%";
+    ce.className = "mchg "+(chg>=0?"up":"down");
+    const err = card.querySelector(".merr"); if(err) err.remove();
+    requestAnimationFrame(()=>drawMini(card.querySelector("canvas"), candles));
+  }catch(e){
+    if(card && !card.querySelector(".merr")){
+      const d = document.createElement("button");
+      d.className = "merr";
+      d.style.cssText = "display:block;width:100%;background:none;border:0;font-family:inherit;cursor:pointer";
+      d.textContent = "取得失敗 ─ タップで再試行";
+      d.onclick = ()=>{ d.remove(); loadMarketCard(coin); };
+      card.appendChild(d);
+    }
+  }
+}
+function loadMarket(){
+  MK_COINS.forEach(loadMarketCard);
+  const u = document.getElementById("mupd");
+  if(u) u.textContent = "更新 "+tS(Date.now());
+}
+function rMarket(){
+  main.innerHTML =
+    '<div class="mchips">'+[["1日",1],["7日",7],["30日",30]].map(([lb,d])=>
+      '<button class="mchip'+(d===mkDays?" on":"")+'" data-days="'+d+'">'+lb+'</button>').join("")+
+    '<span class="mupd" id="mupd"></span></div>'+
+    '<div class="mgrid">'+MK_COINS.map(c=>
+      '<div class="mcard" id="mk-'+c.key+'"><div class="mhead">'+
+      '<span class="msym">'+c.label+'<small style="color:var(--dim);font-weight:normal">/JPY</small></span>'+
+      '<span class="mchg"></span><span class="mprice num">--</span></div>'+
+      '<canvas></canvas></div>').join("")+'</div>'+
+    '<p class="note" style="margin-top:12px">データ: Binance × 為替レート（円換算・参考値）。決済時の換算はQR表示時点のレートで行われます。</p>';
+  main.querySelectorAll("[data-days]").forEach(b=>b.onclick=()=>{
+    mkDays = Number(b.dataset.days); rMarket();
+  });
+  loadMarket();
+}
+// ============ オンチェーン入金履歴と売上への紐付け ============
+const expAddr = k => CHAINS[k].exp.replace("tx/","address/");
+let HIST_CACHE = { at:0, evm:null, btc:null, sol:null };
+
+// JPYC/USDTの直近Transferログ（RPCの範囲制限に合わせて自動縮小）
+async function fetchEvmHist(){
+  const cfg = CHAINS[S.settings.chain];
+  const provider = new ethers.JsonRpcProvider(cfg.rpc, cfg.id, {staticNetwork:true});
+  const latest = await provider.getBlockNumber();
+  const topics = [TRANSFER_TOPIC, null, ethers.zeroPadValue(S.settings.addr, 32)];
+  let items = null;
+  for(const range of [3000, 900]){
+    try{
+      const [a,b] = await Promise.all([
+        provider.getLogs({address:JPYC_TOKEN, fromBlock:latest-range, toBlock:latest, topics}),
+        provider.getLogs({address:USDT_TOKEN[S.settings.chain], fromBlock:latest-range, toBlock:latest, topics}),
+      ]);
+      items = [...a.map(l=>({l,tok:"JPYC"})), ...b.map(l=>({l,tok:"USDT"}))];
+      break;
+    }catch(e){}
+  }
+  if(!items) throw new Error("logs failed");
+  items.sort((x,y)=>y.l.blockNumber - x.l.blockNumber);
+  items = items.slice(0,12);
+  const blockTs = {};
+  await Promise.all(items.map(x=>{
+    if(blockTs[x.l.blockNumber]) return;
+    blockTs[x.l.blockNumber] = provider.getBlock(x.l.blockNumber)
+      .then(b=>b?b.timestamp*1000:null).catch(()=>null);
+  }));
+  const rows = [];
+  for(const x of items){
+    const units = BigInt(x.l.data);
+    const time = await blockTs[x.l.blockNumber];
+    const amtStr = x.tok==="JPYC"
+      ? "¥"+fmt(Math.round(Number(units)/1e18))
+      : (Number(units)/1e6).toFixed(2)+" USDT";
+    rows.push({time, tok:x.tok, units, amtStr, url:cfg.exp+x.l.transactionHash});
+  }
+  return rows;
+}
+// BTC: 直近の受け取りトランザクション
+async function fetchBtcHist(){
+  const addr = S.settings.btcAddr;
+  const r = await fetch("https://mempool.space/api/address/"+addr+"/txs",{cache:"no-store"});
+  if(!r.ok) throw new Error("btc hist");
+  const j = await r.json();
+  return j.slice(0,10).map(tx=>{
+    const sats = tx.vout.filter(v=>v.scriptpubkey_address===addr).reduce((a,v)=>a+v.value,0);
+    return { time: tx.status && tx.status.block_time ? tx.status.block_time*1000 : null,
+      tok:"BTC", units:BigInt(sats), amtStr:(sats/1e8).toFixed(8)+" BTC",
+      url:"https://mempool.space/tx/"+tx.txid };
+  }).filter(x=>x.units>0n);
+}
+// SOL: 直近の取引署名
+async function fetchSolHist(){
+  const r = await fetch(SOL_RPC,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getSignaturesForAddress",
+      params:[S.settings.solAddr,{limit:10}]})});
+  const j = await r.json();
+  if(!j.result) throw new Error("sol hist");
+  return j.result.filter(x=>!x.err).map(x=>({
+    time: x.blockTime ? x.blockTime*1000 : null,
+    tok:"SOL", units:null, amtStr:"署名 "+x.signature.slice(0,8)+"…",
+    url:"https://solscan.io/tx/"+x.signature }));
+}
+// 取引IDが未取得の売上を、オンチェーン履歴と金額・時刻で照合して紐付け
+function linkSalesToChain(){
+  let changed = false;
+  const near = (t, at) => t && Math.abs(t-at) < 30*60000;
+  for(const p of S.sales){
+    if(p.txUrl) continue;
+    try{
+      if((!p.cur || p.cur==="jpyc") && HIST_CACHE.evm){
+        const u = BigInt(p.amount) * 10n**18n;
+        const r = HIST_CACHE.evm.find(r=>r.tok==="JPYC" && r.units===u && near(r.time, p.at));
+        if(r){ p.txUrl = r.url; changed = true; }
+      } else if(p.cur==="usdt" && p.curAmt && HIST_CACHE.evm){
+        const u = decToUnits(p.curAmt, 6);
+        const r = HIST_CACHE.evm.find(r=>r.tok==="USDT" && r.units===u && near(r.time, p.at));
+        if(r){ p.txUrl = r.url; changed = true; }
+      } else if(p.cur==="btc" && p.curAmt && HIST_CACHE.btc){
+        const u = decToUnits(p.curAmt, 8);
+        const r = HIST_CACHE.btc.find(r=>r.units===u && (r.time===null || near(r.time, p.at)));
+        if(r){ p.txUrl = r.url; changed = true; }
+      }
+    }catch(e){}
+  }
+  if(changed) persist();
+  return changed;
+}
+// 売上行の予備リンク先（取引ID未特定でもアドレスの履歴ページへ）
+function saleFallbackUrl(p){
+  const cur = p.cur || "jpyc";
+  if(cur==="btc") return S.settings.btcAddr ? "https://mempool.space/address/"+S.settings.btcAddr : null;
+  if(cur==="sol") return S.settings.solAddr ? "https://solscan.io/account/"+S.settings.solAddr : null;
+  if(!S.settings.addr) return null;
+  if(cur==="eth") return expAddr("ethereum")+S.settings.addr;
+  return expAddr(S.settings.chain)+S.settings.addr;
+}
+
+// ============ 共通パーツ ============
+function exLinks(){
+  return '<a class="exlink" href="'+JPYC_EX_URL+'" target="_blank" rel="noopener">'+
+    '<span class="ic">¥⇔J</span><span class="tx"><span class="t1">JPYC EXでチャージ・換金</span>'+
+    '<span class="t2">銀行口座⇔JPYC ─ 1円＝1JPYCで発行・償還</span></span><span class="arrow">›</span></a>'+
+    '<p class="note" style="margin:2px 0 0">利用にはJPYC EXのアカウント（本人確認）が必要です。</p>';
+}
+
+// ============ お客様向け支払いページ（QRはこのURLを指す） ============
+// EIP-681のトークン送金QRはウォレットごとに解釈が異なり誤額表示の危険があるため、
+// QRには支払いページのURLを入れ、ページからウォレットへ正確なトランザクションを渡す。
+const b64uEnc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))))
+  .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const b64uDec = s => JSON.parse(decodeURIComponent(escape(atob(
+  s.replace(/-/g,"+").replace(/_/g,"/")))));
+function buildPayUrl(d){
+  return location.origin + location.pathname + "?pay=" + b64uEnc(d);
+}
+async function payWithWallet(d, statusEl){
+  const eth = window.ethereum;
+  const set = (t, err) => { statusEl.innerHTML = '<span style="color:'+(err?"#FFD9D2":"#CFF7E8")+';font-weight:bold">'+esc(t)+'</span>'; };
+  if(!eth){
+    // ウォレット内ブラウザで開き直す（MetaMaskディープリンク）
+    location.href = "https://metamask.app.link/dapp/" + location.host + location.pathname + location.search;
+    return;
+  }
+  try{
+    set("ウォレットに接続中…");
+    const accs = await eth.request({method:"eth_requestAccounts"});
+    const from = accs[0];
+    const cfg = CHAINS[d.chain];
+    const hexId = "0x"+cfg.id.toString(16);
+    try{
+      await eth.request({method:"wallet_switchEthereumChain",params:[{chainId:hexId}]});
+    }catch(e){
+      const code = e && (e.code || (e.data && e.data.originalError && e.data.originalError.code));
+      if(code === 4902){
+        await eth.request({method:"wallet_addEthereumChain",params:[{
+          chainId:hexId, chainName:cfg.name, rpcUrls:[cfg.rpc],
+          nativeCurrency:cfg.ncy, blockExplorerUrls:[cfg.exp.replace(/tx\/$/,"")]}]});
+        await eth.request({method:"wallet_switchEthereumChain",params:[{chainId:hexId}]});
+      } else throw e;
+    }
+    set("ウォレットで内容を確認して承認してください…");
+    let tx;
+    if(d.token){
+      // ERC-20 transfer(address,uint256) を厳密にエンコード
+      const data = "0xa9059cbb" +
+        d.to.slice(2).toLowerCase().padStart(64,"0") +
+        BigInt(d.units).toString(16).padStart(64,"0");
+      tx = { from, to:d.token, value:"0x0", data };
+    } else {
+      tx = { from, to:d.to, value:"0x"+BigInt(d.units).toString(16) };
+    }
+    const hash = await eth.request({method:"eth_sendTransaction",params:[tx]});
+    statusEl.innerHTML = '<span style="color:#CFF7E8;font-weight:bold">送信しました。お店の画面で確認されるまでお待ちください。</span>'+
+      '<br><a style="color:#fff" target="_blank" rel="noopener" href="'+CHAINS[d.chain].exp+hash+'">取引を確認</a>';
+  }catch(e){
+    if(e && e.code === 4001) set("キャンセルされました。", true);
+    else set("送信できませんでした。ウォレット内のブラウザで開き直すか、下のアドレスへ手動で送金してください。", true);
+  }
+}
+function rCustomerPay(d){
+  document.querySelector(".top").style.display = "none";
+  app.classList.add("stage");
+  const isJpyc = d.cur === "jpyc";
+  const isNative = d.cur === "btc" || d.cur === "sol";
+  const c = CURR[d.cur] || CURR.jpyc;
+  const netName = d.cur==="btc" ? "Bitcoin" : d.cur==="sol" ? "Solana" : CHAINS[d.chain].name;
+  const old = d.ts && (Date.now()-d.ts > 10*60000);
+  const chip = (id,val,lbl)=>'<div class="addr-chip mono" style="margin-top:10px"><span>'+esc(val)+'</span>'+
+    '<button class="copybtn" data-cp="'+id+'">'+lbl+'</button></div>';
+  main.innerHTML =
+    '<div class="stagewrap">'+
+    '<div class="stage-sub" style="margin-top:10px">'+esc(d.shop||"お支払い")+'</div>'+
+    (isJpyc
+      ? '<div class="amount-hero num"><span class="yen">¥</span>'+fmt(d.jpy)+'</div>'+
+        '<div class="rate-sub">JPYC（'+esc(netName)+'）でのお支払い</div>'
+      : '<div class="amount-hero num crypto">'+esc(d.amt)+'<span class="unit">'+c.label+'</span></div>'+
+        '<div class="rate-sub">≈ ¥'+fmt(d.jpy)+'　'+esc(netName)+'ネットワーク</div>')+
+    (old?'<div class="rate-sub" style="color:#FFD9D2;margin-top:8px">このQRは発行から時間が経っています。お店で最新のQRを表示してもらってください。</div>':"")+
+    '<div id="pay-status" class="rate-sub" style="margin-top:16px;min-height:20px"></div>'+
+    '<button class="cta" style="background:#fff;color:var(--sky-deep);margin-top:14px" id="b-pay">'+
+    (isNative?"対応ウォレットで開く":"ウォレットで支払う")+'</button>'+
+    (isNative?chip("amt", d.amt, "金額をコピー"):"")+
+    chip("addr", d.to, "コピー")+
+    '<p class="stage-note">'+
+    (isNative
+      ? "ボタンを押すと"+netName+"対応ウォレット（"+
+        (d.cur==="btc"?"BlueWallet・Blockstream Green など":"Phantom・Solflare など")+
+        "）が開きます。開かない場合は、上の金額とアドレスをコピーしてウォレットから手動で送金してください。"
+      : "「ウォレットで支払う」を押すと、金額・通貨が正確に入力された送金画面が開きます。ボタンが動かない場合は、MetaMask等のウォレットアプリ内のブラウザでこのページを開いてください。")+
+    '<b>表示と異なる通貨・金額が出た場合は絶対に承認しないでください。</b></p>'+
+    '</div>';
+  document.getElementById("b-pay").onclick = ()=>{
+    if(isNative){
+      const st = document.getElementById("pay-status");
+      location.href = d.uri;
+      setTimeout(()=>{ if(st) st.innerHTML =
+        '<span style="color:#FFD9D2;font-weight:bold">ウォレットが開かない場合は、上の金額とアドレスをコピーして手動で送金してください。</span>'; }, 2500);
+    } else {
+      payWithWallet(d, document.getElementById("pay-status"));
+    }
+  };
+  main.querySelectorAll("[data-cp]").forEach(b=>{
+    const val = b.dataset.cp === "amt" ? d.amt : d.to;
+    const lbl = b.textContent;
+    b.onclick = ()=>{
+      try{ navigator.clipboard.writeText(val); }catch(err){}
+      b.textContent = "コピー済"; setTimeout(()=>{ b.textContent = lbl; }, 1500);
+    };
+  });
+}
+
+// ============ 描画 ============
+function render(){
+  stopWatch();
+  clearInterval(qrTimer); clearInterval(qrCd); qrTimer = null; qrCd = null;
+  document.getElementById("hd-shop").textContent = S.settings.shop || "チェーンレジ";
+  const onStage = S.tab==="register" && (S.stage==="qr" || S.stage==="done");
+  let netLabel;
+  if(!availCurs().length){
+    netLabel = "デモ";
+  } else if(onStage){
+    const cur = S.stage==="done" && S.lastPay ? (S.lastPay.cur||"jpyc") : S.payCur;
+    netLabel = cur==="btc" ? "BITCOIN" : cur==="sol" ? "SOLANA" :
+      cur==="eth" ? "ETHEREUM" : CHAINS[S.settings.chain].name.toUpperCase();
+  } else {
+    netLabel = CHAINS[S.settings.chain].name.toUpperCase();
+  }
+  document.getElementById("hd-net").textContent = netLabel;
+  const stage = S.tab==="register" && (S.stage==="qr" || S.stage==="done");
+  app.classList.toggle("stage", stage);
+  document.getElementById("thumb").style.transform =
+    "translateX("+TABS.indexOf(S.tab)*100+"%)";
+  document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b.dataset.tab===S.tab));
+  if(S.tab==="register"){
+    if(S.stage==="order") rOrder(); else if(S.stage==="qr") rQR(); else rDone();
+  } else if(S.tab==="products") rProducts();
+  else if(S.tab==="history") rHistory();
+  else if(S.tab==="market") rMarket();
+  else rSettings();
+  // 相場タブ表示中のみ自動更新
+  clearInterval(mkTimer); mkTimer = null;
+  if(S.tab==="market") mkTimer = setInterval(()=>{ if(S.tab==="market") loadMarket(); }, 60000);
+}
+
+function rOrder(){
+  const noAddr = availCurs().length === 0;
+  main.innerHTML =
+    (noAddr?'<div class="banner">受け取りアドレス未設定のため<b>デモモード</b>です。「設定」で登録すると実際の入金を検知します。</div>':"")+
+    '<div class="tiles">'+S.products.map(p=>
+      '<button class="tile" data-add="'+p.id+'"><span class="nm">'+esc(p.name)+
+      '</span><span class="pr num">¥'+fmt(p.price)+'</span></button>').join("")+
+    '<button class="tile custom" id="b-custom">＋ 金額を直接入力</button></div>'+
+    (S.cart.length?'<div class="order">'+S.cart.map(l=>
+      '<div class="oline"><button class="minus" data-minus="'+esc(l.key)+'" aria-label="1つ減らす">−</button>'+
+      '<span class="nm">'+esc(l.name)+'</span><span class="q num">×'+l.qty+
+      '</span><span class="num" style="font-weight:bold">¥'+fmt(l.price*l.qty)+'</span></div>').join("")+"</div>":"")+
+    '<div class="dock"><div class="dockrow"><span class="docklb">合計 '+
+    S.cart.reduce((a,l)=>a+l.qty,0)+'点</span><span class="dockv num"><span class="yen">¥</span>'+fmt(total())+
+    '</span></div><button class="cta" id="b-qr"'+(total()?"":" disabled")+'>QRコードで請求する</button></div>';
+  main.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{
+    const p = S.products.find(x=>x.id==b.dataset.add);
+    const i = S.cart.findIndex(l=>l.key==="p"+p.id);
+    if(i>=0) S.cart[i].qty++; else S.cart.push({key:"p"+p.id,name:p.name,price:p.price,qty:1});
+    render();
+  });
+  main.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>{
+    S.cart = S.cart.map(l=>l.key===b.dataset.minus?{...l,qty:l.qty-1}:l).filter(l=>l.qty>0); render();
+  });
+  document.getElementById("b-custom").onclick = openPad;
+  document.getElementById("b-qr").onclick = ()=>{
+    if(total()){ S.payCur = "jpyc"; S.stage="qr"; render(); }
+  };
+}
+
+async function rQR(){
+  const amt = total();
+  const avail = availCurs();
+  const live = avail.length > 0;
+  if(live && !avail.includes(S.payCur)) S.payCur = avail[0];
+  const cur = S.payCur, c = CURR[cur];
+  const needRate = live && cur !== "jpyc";
+
+  const chips = live && avail.length>1
+    ? '<div class="curchips">'+avail.map(k=>
+        '<button class="chip'+(k===cur?" on":"")+'" data-cur="'+k+'">'+CURR[k].label+'</button>').join("")+'</div>'
+    : "";
+
+  main.innerHTML =
+    '<div class="stagewrap">'+chips+
+    '<div class="stage-sub">お支払い金額</div>'+
+    '<div id="amt-area" style="width:100%"></div>'+
+    '<div class="qrframe"><span class="tick tl"></span><span class="tick tr"></span>'+
+    '<span class="tick bl"></span><span class="tick br"></span>'+
+    '<div class="qrcardw" id="qrbox"><div class="qrloading">準備中…</div></div></div>'+
+    '<div class="watch" id="watch"><span class="dot"></span><span id="watch-text">'+
+    (live?"接続中":"デモモード：下のボタンで完了できます")+'</span></div>'+
+    '<div id="addr-area" style="width:100%;display:flex;justify-content:center"></div>'+
+    '<p class="stage-note" id="stage-note"></p>'+
+    '<div style="margin-top:auto;width:100%;display:flex;flex-direction:column;align-items:center">'+
+    (live?"":'<button class="cta" style="background:#fff;color:var(--sky-deep)" id="b-demo">（デモ）支払いを受け取る</button>')+
+    '<button class="cta ghosty" id="b-back">お会計にもどる</button></div></div>';
+
+  main.querySelectorAll("[data-cur]").forEach(b=>b.onclick=()=>{
+    if(b.dataset.cur !== S.payCur){ S.payCur = b.dataset.cur; render(); }
+  });
+  const bd = document.getElementById("b-demo");
+  if(bd) bd.onclick = ()=>onPaid(null,{cur:"jpyc"});
+  document.getElementById("b-back").onclick = ()=>{ S.stage="order"; render(); };
+
+  const amtArea = document.getElementById("amt-area");
+  const qrbox = document.getElementById("qrbox");
+  const note = document.getElementById("stage-note");
+  const addrArea = document.getElementById("addr-area");
+  const showAddr = a => {
+    addrArea.innerHTML = '<div class="addr-chip mono"><span>'+esc(a)+'</span>'+
+      '<button class="copybtn" id="b-copy">コピー</button></div>';
+    document.getElementById("b-copy").onclick = e=>{
+      try{ navigator.clipboard.writeText(a); }catch(err){}
+      e.target.textContent="コピー済"; setTimeout(()=>{e.target.textContent="コピー";},1500);
+    };
+  };
+  const showQR = text => {
+    qrbox.innerHTML = "";
+    new QRCode(qrbox,{text,width:196,height:196,correctLevel:QRCode.CorrectLevel.M});
+  };
+
+  // --- JPYC（またはデモ） ---
+  if(!needRate){
+    amtArea.innerHTML = '<div class="amount-hero num"><span class="yen">¥</span>'+fmt(amt)+'</div>';
+    if(!live){
+      showQR("demo:jpyc-pos:"+amt);
+      note.textContent = "デモ用QRです。実際の請求には設定でアドレスを登録してください。";
+      return;
+    }
+    const cfg = CHAINS[S.settings.chain];
+    const units = BigInt(amt) * 10n**18n;
+    showQR(buildPayUrl({v:1, cur:"jpyc", jpy:amt, amt:String(amt), units:units.toString(),
+      to:S.settings.addr, token:JPYC_TOKEN, chain:S.settings.chain, shop:S.settings.shop, ts:Date.now()}));
+    showAddr(S.settings.addr);
+    note.textContent = "スマホのカメラで読み取ると支払いページが開き、ウォレットに正確な金額のJPYC送金（"+cfg.name+"）が自動入力されます。着金は自動で確認されます。";
+    watchErc20(JPYC_TOKEN, {list:[units], min:units}, {cur:"jpyc"});
+    return;
+  }
+
+  // --- レートが必要な通貨（15秒ごとに額とQRを自動更新） ---
+  amtArea.innerHTML = '<div class="rate-sub">レート取得中…</div>';
+  try{ await fetchRates(); }
+  catch(e){
+    if(S.payCur !== cur || S.stage !== "qr") return;
+    amtArea.innerHTML = '<div class="rate-sub" style="color:#FFD9D2">レートを取得できませんでした。通信環境を確認してください。</div>';
+    qrbox.innerHTML = '<div class="qrloading">－</div>';
+    note.innerHTML = "";
+    const retry = document.createElement("button");
+    retry.className = "cta"; retry.style.cssText = "background:#fff;color:var(--sky-deep);max-width:280px;margin-top:8px";
+    retry.textContent = "レートを再取得";
+    retry.onclick = ()=>render();
+    amtArea.appendChild(retry);
+    return;
+  }
+  if(S.payCur !== cur || S.stage !== "qr") return; // 取得中に切替済み
+
+  const first = convert(amt, cur);
+  const pay = { list:[first.units], min:first.units }; // 表示したどの額の着金も受理
+  const extra = { cur, curAmt:first.amtStr, rate:first.rate };
+
+  const qrText = (u, aStr) => {
+    if(cur === "usdt")
+      return buildPayUrl({v:1, cur, jpy:amt, amt:aStr, units:u.toString(),
+        to:S.settings.addr, token:USDT_TOKEN[S.settings.chain], chain:S.settings.chain,
+        shop:S.settings.shop, ts:Date.now()});
+    if(cur === "eth")
+      return buildPayUrl({v:1, cur, jpy:amt, amt:aStr, units:u.toString(),
+        to:S.settings.addr, token:null, chain:"ethereum",
+        shop:S.settings.shop, ts:Date.now()});
+    if(cur === "btc")
+      return buildPayUrl({v:1, cur, jpy:amt, amt:aStr, units:u.toString(),
+        to:S.settings.btcAddr, shop:S.settings.shop, ts:Date.now(),
+        uri:"bitcoin:"+S.settings.btcAddr+"?amount="+aStr+"&label="+encodeURIComponent(S.settings.shop)});
+    return buildPayUrl({v:1, cur, jpy:amt, amt:aStr, units:u.toString(),
+      to:S.settings.solAddr, shop:S.settings.shop, ts:Date.now(),
+      uri:"solana:"+S.settings.solAddr+"?amount="+aStr+"&label="+encodeURIComponent(S.settings.shop)});
+  };
+  const renderAmt = (aStr, rate) => {
+    amtArea.innerHTML =
+      '<div class="amount-hero num crypto">'+aStr+'<span class="unit">'+c.label+'</span></div>'+
+      '<div class="rate-sub">≈ ¥'+fmt(amt)+'　1 '+c.label+' = ¥'+fmt(Math.round(rate))+'（'+tS(RATES.at)+'時点）<br>'+
+      'レート自動更新まで <span id="qr-cd">15</span>秒</div>';
+  };
+
+  renderAmt(first.amtStr, first.rate);
+  showQR(qrText(first.units, first.amtStr));
+
+  if(cur === "usdt"){
+    showAddr(S.settings.addr);
+    note.textContent = "カメラで読み取ると支払いページが開き、ウォレットに正確な金額のUSDT送金（"+CHAINS[S.settings.chain].name+"）が自動入力されます。";
+    watchErc20(USDT_TOKEN[S.settings.chain], pay, extra);
+  } else if(cur === "eth"){
+    showAddr(S.settings.addr);
+    note.textContent = "カメラで読み取ると支払いページが開き、ウォレットに正確な金額のETH送金（Ethereumメインネット）が自動入力されます。";
+    watchEth(pay, extra);
+  } else if(cur === "btc"){
+    showAddr(S.settings.btcAddr);
+    note.textContent = "カメラで読み取ると支払いページが開きます。未承認の段階で検知します（高額の場合は承認をお待ちください）。";
+    watchBtc(pay, extra);
+  } else if(cur === "sol"){
+    showAddr(S.settings.solAddr);
+    note.textContent = "カメラで読み取ると支払いページが開き、Phantom等のウォレットで支払えます。着金は残高で自動確認されます。";
+    watchSol(pay, extra);
+  }
+
+  // 15秒ごとに最新レートで額とQRを更新（監視は継続・旧額の着金も受理）
+  let cd = 15;
+  qrCd = setInterval(()=>{
+    cd = Math.max(cd-1, 0);
+    const e = document.getElementById("qr-cd");
+    if(e) e.textContent = cd;
+  }, 1000);
+  qrTimer = setInterval(async ()=>{
+    try{
+      await fetchRates(true);
+      if(S.stage !== "qr" || S.payCur !== cur) return;
+      const nv = convert(amt, cur);
+      if(!pay.list.some(x=>x===nv.units)){
+        pay.list.push(nv.units);
+        if(pay.list.length > 30) pay.list.shift();
+        if(nv.units < pay.min) pay.min = nv.units;
+      }
+      extra.curAmt = nv.amtStr; extra.rate = nv.rate;
+      renderAmt(nv.amtStr, nv.rate);
+      showQR(qrText(nv.units, nv.amtStr));
+    }catch(e){/* 取得失敗時は前回の額を維持し次回に再試行 */}
+    cd = 15;
+  }, 15000);
+}
+
+function rDone(){
+  const p = S.lastPay;
+  const isCrypto = p.cur && p.cur !== "jpyc";
+  main.innerHTML =
+    '<div class="stagewrap">'+
+    '<div class="stamp" id="stamp">済</div>'+
+    '<div class="amount-hero num" style="margin:6px 0 2px;font-size:44px"><span class="yen">¥</span>'+fmt(p.amount)+'</div>'+
+    (isCrypto?'<div class="rate-sub">受領: '+esc(p.curAmt)+' '+CURR[p.cur].label+'</div>':"")+
+    '<div class="paid-lbl">入金を確認しました</div>'+
+    '<div class="paid-meta">'+tS(p.at)+'・'+(p.cur?CURR[p.cur].label:"JPYC")+
+    (p.txUrl?'・<a target="_blank" rel="noopener" href="'+p.txUrl+'">取引を確認</a>':"")+'</div>'+
+    '<div style="margin-top:auto;width:100%">'+
+    '<button class="cta" style="background:#fff;color:var(--sky-deep)" id="b-pdf">レシートをPDFで送る</button>'+
+    '<button class="cta" style="margin-top:8px;background:rgba(255,255,255,.18);box-shadow:none" id="b-next">次のお会計へ</button></div></div>';
+  document.getElementById("b-pdf").onclick = ()=>sendReceiptPdf(p);
+  document.getElementById("b-next").onclick = ()=>{ S.cart=[]; S.stage="order"; render(); };
+  setTimeout(()=>{ const s=document.getElementById("stamp"); if(s) s.classList.add("on"); },260);
+}
+
+function rProducts(){
+  const ed = S.editId ? S.products.find(p=>p.id===S.editId) : null;
+  main.innerHTML =
+    '<div class="panel"><div><label for="pn">商品・サービス名</label>'+
+    '<input id="pn" placeholder="例：ランチセット" value="'+(ed?esc(ed.name):"")+'"></div>'+
+    '<div><label for="pp">価格（円）</label>'+
+    '<input id="pp" inputmode="numeric" placeholder="例：900" value="'+(ed?ed.price:"")+'"></div>'+
+    '<button class="save" id="b-save">'+(ed?"変更を保存":"商品を追加")+'</button>'+
+    (ed?'<button class="cta ghosty" id="b-ecancel" style="padding:4px;color:var(--dim)">編集をやめる</button>':"")+'</div>'+
+    '<div class="list">'+(S.products.length?S.products.map(p=>
+      '<div class="lrow"><span class="nm">'+esc(p.name)+'</span>'+
+      '<span class="num sub">¥'+fmt(p.price)+'</span>'+
+      '<button class="act" style="color:var(--sky-deep)" data-e="'+p.id+'">編集</button>'+
+      '<button class="act" style="color:var(--err)" data-d="'+p.id+'">削除</button></div>').join(""):
+      '<p class="note" style="padding:14px 0">商品がまだありません。追加するとお会計画面にボタンが並びます。</p>')+'</div>';
+  document.getElementById("b-save").onclick = ()=>{
+    const name = document.getElementById("pn").value.trim();
+    const price = Number(document.getElementById("pp").value.replace(/[^0-9]/g,""));
+    if(!name || !(price>0)) return;
+    if(S.editId){ const p=S.products.find(x=>x.id===S.editId); p.name=name; p.price=price; }
+    else S.products.push({id:Date.now(),name,price});
+    S.editId=null; persist(); render();
+  };
+  const bc = document.getElementById("b-ecancel");
+  if(bc) bc.onclick = ()=>{ S.editId=null; render(); };
+  main.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{ S.editId=Number(b.dataset.e); render(); });
+  main.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{
+    S.products = S.products.filter(p=>p.id!=b.dataset.d);
+    if(S.editId==b.dataset.d) S.editId=null;
+    persist(); render();
+  });
+}
+
+function rHistory(){
+  const chainView = S.histView === "chain";
+  const toggle = '<div class="mchips">'+
+    '<button class="mchip'+(!chainView?" on":"")+'" data-hv="list">売上一覧</button>'+
+    '<button class="mchip'+(chainView?" on":"")+'" data-hv="chain">オンチェーン履歴</button></div>';
+
+  if(chainView){
+    const sec = (id, title, allUrl) =>
+      '<div class="panel" style="gap:8px"><label style="margin:0">'+title+'</label>'+
+      '<div id="'+id+'" class="note">読み込み中…</div>'+
+      '<a class="txlink" target="_blank" rel="noopener" href="'+allUrl+'">エクスプローラーで全履歴を見る ›</a></div>';
+    let body = "";
+    if(S.settings.addr) body += sec("ch-evm","JPYC・USDT（"+CHAINS[S.settings.chain].name+"）",
+      expAddr(S.settings.chain)+S.settings.addr);
+    if(S.settings.btcAddr) body += sec("ch-btc","BTC（Bitcoin）",
+      "https://mempool.space/address/"+S.settings.btcAddr);
+    if(S.settings.solAddr) body += sec("ch-sol","SOL（Solana）",
+      "https://solscan.io/account/"+S.settings.solAddr);
+    if(!body) body = '<p class="note" style="padding:8px 0">アドレスが未設定です。「設定」で受け取りアドレスを登録すると、ここにブロックチェーン上の入金履歴が表示されます。</p>';
+    main.innerHTML = toggle + body +
+      '<p class="note">直近の入金のみ表示します（JPYC・USDTは過去1〜2時間程度）。金額と時刻が一致した売上には取引リンクが自動で紐付きます。</p>';
+  } else {
+    const sum = S.sales.reduce((a,p)=>a+p.amount,0);
+    main.innerHTML = toggle +
+      '<div class="sumrow"><span class="docklb">売上合計（円換算）</span>'+
+      '<span class="num" style="font-size:30px;font-weight:bold"><span style="font-size:17px;color:var(--dim)">¥</span>'+fmt(sum)+'</span></div>'+
+      '<div class="list">'+(S.sales.length?S.sales.map((p,i)=>{
+        // 旧データ(p.tx+p.chain)との互換
+        const txUrl = p.txUrl || (p.tx && p.chain && CHAINS[p.chain] ? CHAINS[p.chain].exp+p.tx : null);
+        const fb = txUrl ? null : saleFallbackUrl(p);
+        return '<div class="lrow"><span class="sub num">'+tS(p.at)+'</span>'+
+        '<span class="curbadge">'+(p.cur?CURR[p.cur].label:"JPYC")+'</span>'+
+        (txUrl?'<a class="txlink" target="_blank" rel="noopener" href="'+txUrl+'">on-chain</a>'
+          : fb?'<a class="txlink" style="color:var(--dim)" target="_blank" rel="noopener" href="'+fb+'">履歴</a>':"")+
+        '<span class="num" style="font-weight:bold;margin-left:auto">¥'+fmt(p.amount)+'</span>'+
+        '<button class="act" style="color:var(--sky-deep)" data-r="'+i+'">レシート</button></div>';}).join(""):
+        '<p class="note" style="padding:14px 0">まだ売上がありません。最初のお会計がここに並びます。</p>')+'</div>'+
+      '<div class="panel" style="margin-top:14px">'+exLinks()+'</div>';
+    main.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>sendReceiptPdf(S.sales[Number(b.dataset.r)]));
+  }
+  main.querySelectorAll("[data-hv]").forEach(b=>b.onclick=()=>{
+    if(S.histView !== b.dataset.hv){ S.histView = b.dataset.hv; render(); }
+  });
+  loadChainHist(); // 履歴の取得と売上への紐付け（両ビュー共通・バックグラウンド）
+}
+
+function fillHist(id, rows){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = rows && rows.length ? rows.map(r=>
+    '<div class="lrow" style="padding:9px 0"><span class="sub num">'+(r.time?tS(r.time):"未承認")+'</span>'+
+    '<span class="curbadge">'+r.tok+'</span>'+
+    '<span class="num" style="font-weight:bold;margin-left:auto">'+esc(r.amtStr)+'</span>'+
+    '<a class="txlink" target="_blank" rel="noopener" href="'+r.url+'">詳細</a></div>').join("")
+    : '<span class="note">直近の入金はありません。</span>';
+}
+function fillHistErr(id){
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = '<span class="status-err" style="font-size:12px">取得できませんでした（時間をおいて開き直してください）</span>';
+}
+let histLoading = false;
+async function loadChainHist(){
+  if(histLoading) return;
+  histLoading = true;
+  try{
+    const fresh = Date.now()-HIST_CACHE.at < 60000;
+    const tasks = [];
+    if(S.settings.addr) tasks.push(
+      (fresh && HIST_CACHE.evm ? Promise.resolve(HIST_CACHE.evm) : fetchEvmHist())
+        .then(r=>{ HIST_CACHE.evm = r; fillHist("ch-evm", r); })
+        .catch(()=>fillHistErr("ch-evm")));
+    if(S.settings.btcAddr) tasks.push(
+      (fresh && HIST_CACHE.btc ? Promise.resolve(HIST_CACHE.btc) : fetchBtcHist())
+        .then(r=>{ HIST_CACHE.btc = r; fillHist("ch-btc", r); })
+        .catch(()=>fillHistErr("ch-btc")));
+    if(S.settings.solAddr) tasks.push(
+      (fresh && HIST_CACHE.sol ? Promise.resolve(HIST_CACHE.sol) : fetchSolHist())
+        .then(r=>{ HIST_CACHE.sol = r; fillHist("ch-sol", r); })
+        .catch(()=>fillHistErr("ch-sol")));
+    await Promise.allSettled(tasks);
+    HIST_CACHE.at = Date.now();
+    // 紐付けに成功したら売上一覧を更新
+    if(linkSalesToChain() && S.tab==="history" && S.histView!=="chain") render();
+  } finally { histLoading = false; }
+}
+
+function rSettings(){
+  const st = S.settings;
+  main.innerHTML =
+    '<div class="panel"><div><label for="ss">店名・屋号（レシートに印字されます）</label>'+
+    '<input id="ss" value="'+esc(st.shop)+'"></div>'+
+    '<div><label for="sa">EVMアドレス（JPYC・USDT・ETHの受け取り）</label>'+
+    '<input id="sa" class="mono" style="font-size:13px" placeholder="0x0000…" value="'+esc(st.addr)+'" spellcheck="false"></div>'+
+    '<div><label for="sc">JPYC・USDTのネットワーク</label><select id="sc">'+
+    Object.entries(CHAINS).map(([k,v])=>
+      '<option value="'+k+'"'+(st.chain===k?" selected":"")+'>'+v.name+
+      (k==="polygon"?"（推奨・ガス代 数円以下）":"")+'</option>').join("")+'</select>'+
+    '<p class="note" style="margin:6px 0 0">ETHは常にEthereumメインネットで受け取ります。</p></div>'+
+    '<div><label for="sb">BTCアドレス（任意・BTC受け取りを有効化）</label>'+
+    '<input id="sb" class="mono" style="font-size:13px" placeholder="bc1… または 1…/3…" value="'+esc(st.btcAddr||"")+'" spellcheck="false"></div>'+
+    '<div><label for="so">SOLアドレス（任意・SOL受け取りを有効化）</label>'+
+    '<input id="so" class="mono" style="font-size:13px" placeholder="Solanaのウォレットアドレス" value="'+esc(st.solAddr||"")+'" spellcheck="false">'+
+    '<p class="note" style="margin:6px 0 0">いずれもアドレス（公開情報）のみで入金を検知します。<b>秘密鍵は絶対に入力しないでください。</b></p></div>'+
+    '<div><label for="sk">サーバー保存の合言葉</label>'+
+    '<input id="sk" placeholder="api.phpのSYNC_KEYと同じ文字列" value="'+esc(st.syncKey||"")+'" spellcheck="false">'+
+    '<p class="note" style="margin:6px 0 0">同じフォルダに api.php を設置し、その中のSYNC_KEYと同じ合言葉を入力すると、設定・商品・売上がサーバーに保存され、複数の端末で共有できます。空欄の場合はこの端末のみに保存します。</p></div>'+
+    '<div id="sync-status"></div>'+
+    '<div id="s-msg"></div>'+
+    '<button class="save" id="b-sset">保存</button></div>'+
+    '<div class="panel">'+exLinks()+'</div>'+
+    '<p class="note">JPYC・USDTは表示額ちょうどの着金、ETH・BTC・SOLは残高の増加で入金を検知します。BTC・ETH・SOLのレートはQR表示時点のCoinGecko価格で換算・固定されます。着金の検知はこの端末から公開API・RPCへの読み取りのみで行い、外部にデータを送信しません。本アプリはJPYC株式会社・各ブロックチェーン・ウォレット提供者とは無関係の非公式ツールです。</p>';
+  document.getElementById("b-sset").onclick = ()=>{
+    const shop = document.getElementById("ss").value.trim() || "チェーンレジ";
+    const addr = document.getElementById("sa").value.trim();
+    const chain = document.getElementById("sc").value;
+    const btcAddr = document.getElementById("sb").value.trim();
+    const solAddr = document.getElementById("so").value.trim();
+    const msg = document.getElementById("s-msg");
+    if(addr && !ethers.isAddress(addr)){
+      msg.innerHTML = '<span class="status-err">EVMアドレスの形式が正しくありません。0xから始まる42文字を確認してください。</span>'; return;
+    }
+    if(btcAddr && !/^(bc1[a-zA-Z0-9]{20,90}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/.test(btcAddr)){
+      msg.innerHTML = '<span class="status-err">BTCアドレスの形式が正しくありません。</span>'; return;
+    }
+    if(solAddr && !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(solAddr)){
+      msg.innerHTML = '<span class="status-err">SOLアドレスの形式が正しくありません。</span>'; return;
+    }
+    S.settings = { shop, addr: addr?ethers.getAddress(addr):"", chain, btcAddr, solAddr,
+      syncKey: document.getElementById("sk").value.trim() };
+    persist().then(ok=>{
+      const m2 = document.getElementById("s-msg");
+      if(m2 && !ok) m2.innerHTML =
+        '<span class="status-err">保存できませんでした。プライベートブラウズをオフにするか、api.phpの設置を確認してください。</span>';
+    });
+    render();
+    document.getElementById("s-msg").innerHTML =
+      '<span class="status-ok">保存しました。対応通貨: '+
+      (availCurs().length?availCurs().map(k=>CURR[k].label).join("・"):"なし（デモモード）")+'</span>';
+  };
+}
+
+function openPad(){
+  S.padVal = "";
+  const root = document.getElementById("sheet-root");
+  root.innerHTML = '<div class="overlay" id="ov"><div class="sheet">'+
+    '<label style="margin-bottom:8px">金額を直接入力</label>'+
+    '<div class="padnum num" id="padnum">¥0</div><div class="pad">'+
+    ["7","8","9","4","5","6","1","2","3","00","0"].map(k=>
+      '<button class="key" data-k="'+k+'">'+k+'</button>').join("")+
+    '<button class="key" data-k="del" aria-label="1文字削除">⌫</button></div>'+
+    '<button class="cta" id="b-addc" disabled>お会計に追加</button></div></div>';
+  const ov = document.getElementById("ov");
+  ov.onclick = e=>{ if(e.target===ov) root.innerHTML=""; };
+  root.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
+    const k = b.dataset.k;
+    if(k==="del") S.padVal = S.padVal.slice(0,-1);
+    else if(S.padVal.length<7 && !(k==="00"&&!S.padVal)) S.padVal += k;
+    document.getElementById("padnum").textContent = "¥"+fmt(Number(S.padVal||0));
+    document.getElementById("b-addc").disabled = !Number(S.padVal||0);
+  });
+  document.getElementById("b-addc").onclick = ()=>{
+    const v = Number(S.padVal||0);
+    if(v>0) S.cart.push({key:"c"+Date.now(),name:"金額指定",price:v,qty:1});
+    root.innerHTML=""; render();
+  };
+}
+
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{
+  S.tab = b.dataset.tab;
+  if(S.tab==="register" && S.stage==="qr") S.stage="order";
+  render();
+});
+
+// ---- 起動：?pay= 付きURLはお客様向け支払いページとして表示 ----
+const PAY_REQ = (()=>{
+  try{
+    const q = new URLSearchParams(location.search).get("pay");
+    if(!q) return null;
+    const d = b64uDec(q);
+    if(!d || !d.to || !d.units || !d.cur) return null;
+    if(d.cur === "btc"){
+      if(!/^(bc1[a-zA-Z0-9]{20,90}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/.test(d.to)) return null;
+      if(!d.uri || !d.uri.startsWith("bitcoin:")) return null;
+    } else if(d.cur === "sol"){
+      if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(d.to)) return null;
+      if(!d.uri || !d.uri.startsWith("solana:")) return null;
+    } else {
+      if(!CHAINS[d.chain]) return null;
+      if(!ethers.isAddress(d.to)) return null;
+      if(d.token && !ethers.isAddress(d.token)) return null;
+    }
+    return d;
+  }catch(e){ return null; }
+})();
+if(PAY_REQ){
+  rCustomerPay(PAY_REQ);
+} else {
+  // 右上のネットワークバッジ: タップで設定へ
+  const netEl = document.querySelector(".net");
+  netEl.style.cursor = "pointer";
+  netEl.title = "JPYC・USDTの受け取りネットワーク（タップで設定）";
+  netEl.onclick = ()=>{ S.tab = "settings"; render(); };
+  restore().then(render);
+  render();
+}
+</script>
+</body>
+</html>

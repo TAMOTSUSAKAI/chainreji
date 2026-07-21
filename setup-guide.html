@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>チェーンレジ かんたん設定ガイド</title>
+<style>
+:root{
+  --sky:#00A3E0; --deep:#006C99; --soft:#EAF6FC; --line:#D3E9F4;
+  --ink:#20313D; --dim:#7C8B96; --warnbg:#FDECEA; --warnbd:#F2C4BC; --warn:#C0392B;
+  --ok:#149D6F; --okbg:#E8F7F1;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#F2F8FC;color:var(--ink);line-height:1.9;
+  font-family:"Meiryo","メイリオ","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+  font-size:16px;}
+.page{max-width:720px;margin:0 auto;padding:0 18px 60px;}
+header.hero{background:linear-gradient(180deg,#0090D4,#005E92);color:#fff;
+  border-radius:0 0 24px 24px;padding:36px 24px 30px;text-align:center;}
+.hero h1{margin:0;font-size:26px;letter-spacing:.04em;}
+.hero p{margin:10px 0 0;color:#BFE4F5;font-size:14px;}
+.hero .time{display:inline-block;margin-top:14px;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:6px 18px;
+  font-size:14px;font-weight:bold;}
+section{margin-top:34px;}
+.stepnum{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.stepnum .n{width:46px;height:46px;border-radius:50%;background:var(--sky);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;
+  flex-shrink:0;box-shadow:0 4px 10px -3px rgba(0,163,224,.55);}
+.stepnum h2{margin:0;font-size:20px;}
+.step p{margin:8px 0;}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:20px;box-shadow:0 1px 4px rgba(0,108,153,.06);}
+.check{list-style:none;margin:12px 0 0;padding:0;}
+.check li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;
+  border-bottom:1px dashed var(--line);}
+.check li:last-child{border-bottom:0;}
+.check .bx{width:26px;height:26px;border:2px solid var(--sky);border-radius:7px;
+  flex-shrink:0;margin-top:4px;background:var(--soft);}
+.check b{display:block;}
+.check small{color:var(--dim);}
+.warn{background:var(--warnbg);border:2px solid var(--warnbd);border-radius:14px;
+  padding:16px 18px;margin-top:16px;}
+.warn .t{color:var(--warn);font-weight:bold;font-size:17px;}
+.tip{background:var(--okbg);border:1px solid #BFE8D8;border-radius:12px;
+  padding:12px 16px;margin-top:14px;font-size:14.5px;}
+.tip b{color:var(--ok);}
+/* ---- 画面の複製（フォン枠） ---- */
+.phone{position:relative;max-width:340px;margin:20px auto 8px;background:#fff;
+  border:2px solid var(--line);border-radius:22px;padding:16px;
+  box-shadow:0 10px 30px -14px rgba(0,60,90,.25);}
+.phone.blue{background:linear-gradient(180deg,#0090D4,#005E92);border-color:#0079B0;color:#fff;}
+.p-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.p-shop{font-weight:bold;font-size:14px;}
+.p-net{font-size:10px;color:var(--dim);font-weight:bold;}
+.p-net .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:4px;}
+.p-tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--soft);
+  border:1px solid var(--line);border-radius:9px;padding:2px;font-size:10.5px;
+  font-weight:bold;color:var(--dim);text-align:center;margin-bottom:12px;}
+.p-tabs span{padding:6px 0;border-radius:7px;}
+.p-tabs .on{background:#fff;color:var(--deep);box-shadow:0 1px 3px rgba(0,108,153,.2);}
+.p-lb{font-size:10px;color:var(--dim);font-weight:bold;letter-spacing:.1em;margin:10px 0 4px;}
+.p-in{border:1px solid var(--line);background:#F7FBFE;border-radius:8px;
+  padding:9px 10px;font-size:12.5px;color:var(--ink);overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;}
+.p-in.mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;}
+.p-in.ph{color:#AEB9C2;}
+.p-btn{background:var(--sky);color:#fff;text-align:center;border-radius:9px;
+  padding:11px;font-weight:bold;font-size:13px;margin-top:14px;letter-spacing:.1em;}
+.p-ok{color:var(--ok);font-weight:bold;font-size:12px;margin-top:10px;}
+/* 吹き出し番号 */
+.co{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--deep);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;
+  font-size:15px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,40,60,.35);z-index:2;}
+.legend{list-style:none;margin:14px 0 0;padding:0;}
+.legend li{display:flex;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);
+  align-items:flex-start;}
+.legend li:last-child{border-bottom:0;}
+.legend .n{width:28px;height:28px;border-radius:50%;background:var(--deep);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;
+  flex-shrink:0;margin-top:3px;}
+.legend b{color:var(--deep);}
+.legend small{color:var(--dim);display:block;}
+/* フォルダ図・コード図 */
+.folder{font-size:15px;background:#F7FBFE;border:1px solid var(--line);
+  border-radius:12px;padding:16px 20px;margin-top:14px;line-height:2.2;}
+.folder .f{font-weight:bold;}
+.folder .in{padding-left:26px;}
+.codebox{background:#20313D;color:#D9E6EE;border-radius:12px;padding:14px 18px;
+  font-family:ui-monospace,Consolas,monospace;font-size:13px;margin-top:12px;
+  overflow-x:auto;line-height:2;}
+.codebox .del{color:#F1948A;text-decoration:line-through;}
+.codebox .add{color:#7DCEA0;font-weight:bold;}
+.arrow{ text-align:center;color:var(--sky);font-size:26px;margin:6px 0;}
+/* 済スタンプミニ */
+.stampmini{width:86px;height:86px;border:5px solid #fff;border-radius:50%;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:bold;
+  transform:rotate(-8deg);margin:14px auto 6px;}
+/* FAQ */
+.faq dt{font-weight:bold;color:var(--deep);margin-top:16px;}
+.faq dt::before{content:"Q. ";}
+.faq dd{margin:4px 0 0;}
+.faq dd::before{content:"A. ";font-weight:bold;color:var(--sky);}
+footer{margin-top:44px;text-align:center;color:var(--dim);font-size:12.5px;line-height:2;}
+@media print{ body{background:#fff;} .card,.phone{box-shadow:none;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>チェーンレジ<br>かんたん設定ガイド</h1>
+  <p>お店で暗号資産のお支払いを受け付けるまで、ぜんぶで5ステップ</p>
+  <span class="time">所要時間の目安：約15分</span>
+</header>
+<div class="page">
+
+<!-- 準備 -->
+<section class="step">
+  <div class="stepnum"><span class="n">0</span><h2>はじめに準備するもの</h2></div>
+  <div class="card">
+    <ul class="check">
+      <li><span class="bx"></span><div><b>ホームページを置けるサーバー</b>
+        <small>レンタルサーバー等。ホームページ制作をお願いしている業者さんに「このファイルを置いてください」と渡すのでも大丈夫です。</small></div></li>
+      <li><span class="bx"></span><div><b>ウォレットアプリ（MetaMask など）</b>
+        <small>スマホに無料でインストールできる「暗号資産のお財布」です。売上の受け取り先になります。</small></div></li>
+      <li><span class="bx"></span><div><b>JPYC EX のアカウント（あとからでもOK）</b>
+        <small>受け取ったJPYCを銀行口座の日本円に換金するときに使います。jpyc.co.jp で本人確認をして作成します。</small></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- STEP1 -->
+<section class="step">
+  <div class="stepnum"><span class="n">1</span><h2>ウォレットのアドレスをコピーする</h2></div>
+  <p>ウォレットアプリを開くと、画面の上のほうに <b>0x から始まる長い文字列</b>があります。これが「アドレス」＝お店の口座番号のようなものです。タップすると1回でコピーできます。</p>
+  <div class="phone">
+    <span class="co" style="top:54px;right:14px">1</span>
+    <div style="text-align:center;font-weight:bold;font-size:14px">マイウォレット</div>
+    <div class="p-in mono" style="margin-top:14px;text-align:center">0x777e9b23ad5E9Ec7E1759…D9a　⧉</div>
+    <div style="text-align:center;font-size:11px;color:var(--dim);margin-top:6px">タップしてコピー</div>
+  </div>
+  <ul class="legend">
+    <li><span class="n">1</span><div><b>ここをタップ</b>「コピーしました」と出ればOK。あとで貼り付けるので、このスマホのまま進んでください。</div></li>
+  </ul>
+  <div class="warn">
+    <div class="t">⚠ ぜったいにしないでください</div>
+    「<b>秘密鍵</b>」や「<b>シードフレーズ（12〜24個の英単語）</b>」は、チェーンレジにも、他のどこにも入力しないでください。これを知られるとお金を全部抜かれます。チェーンレジが使うのは<b>アドレス（公開してよい情報）だけ</b>です。
+  </div>
+</section>
+
+<!-- STEP2 -->
+<section class="step">
+  <div class="stepnum"><span class="n">2</span><h2>ファイルをサーバーに置く</h2></div>
+  <p>zipに入っている2つのファイルを、お店のホームページと同じサーバーにアップロードします。場所はどこでも構いませんが、<b>2つは同じフォルダ</b>に入れてください。</p>
+  <div class="card">
+    <div class="folder">
+      📁 <span class="f">あなたのサーバー</span><br>
+      <span class="in">📄 index.html　← アプリ本体（これを開いて使います）</span><br>
+      <span class="in">📄 api.php　　 ← 保存用（1台だけで使うなら無くてもOK）</span>
+    </div>
+    <div class="tip"><b>ヒント:</b> アドレスが「https://」で始まるように設定してもらうと、お客様のウォレット連携が確実に動きます。業者さんに「SSL化してください」と伝えれば通じます。</div>
+  </div>
+</section>
+
+<!-- STEP3 -->
+<section class="step">
+  <div class="stepnum"><span class="n">3</span><h2>アプリを開いて「設定」をタップ</h2></div>
+  <p>アップロードした index.html をスマホやタブレットのブラウザで開くと、下の画面になります。右上の「設定」をタップしてください。</p>
+  <div class="phone">
+    <span class="co" style="top:64px;right:8px">1</span>
+    <div class="p-head"><span class="p-shop">チェーンレジ</span><span class="p-net"><span class="dot"></span>デモ</span></div>
+    <div class="p-tabs"><span class="on">お会計</span><span>商品</span><span>売上</span><span>相場</span><span>設定</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="p-in" style="text-align:center;padding:14px 6px">ランチセット<br><b style="color:var(--deep)">¥900</b></div>
+      <div class="p-in" style="text-align:center;padding:14px 6px">コーヒー<br><b style="color:var(--deep)">¥400</b></div>
+    </div>
+  </div>
+  <ul class="legend">
+    <li><span class="n">1</span><div><b>「設定」をタップ</b><small>最初は右上に「デモ」と表示されています。設定が終わると消えます。</small></div></li>
+  </ul>
+</section>
+
+<!-- STEP4 -->
+<section class="step">
+  <div class="stepnum"><span class="n">4</span><h2>設定を入力して保存する</h2></div>
+  <p>入力するのは実質2つだけ。<b>①お店の名前</b>と、<b>②さっきコピーしたアドレス</b>です。あとはそのままで大丈夫です。</p>
+  <div class="phone">
+    <span class="co" style="top:66px;right:10px">1</span>
+    <span class="co" style="top:126px;right:10px">2</span>
+    <span class="co" style="top:186px;right:10px">3</span>
+    <span class="co" style="top:246px;right:10px">4</span>
+    <span class="co" style="top:326px;right:10px">5</span>
+    <div class="p-head"><span class="p-shop">チェーンレジ</span><span class="p-net"><span class="dot"></span>デモ</span></div>
+    <div class="p-tabs"><span>お会計</span><span>商品</span><span>売上</span><span>相場</span><span class="on">設定</span></div>
+    <div class="p-lb">店名・屋号（レシートに印字されます）</div>
+    <div class="p-in">まる福食堂</div>
+    <div class="p-lb">EVMアドレス（JPYC・USDT・ETHの受け取り）</div>
+    <div class="p-in mono">0x777e9b23ad5E9Ec7E17591dAc409E…</div>
+    <div class="p-lb">JPYC・USDTのネットワーク</div>
+    <div class="p-in">Polygon（推奨・ガス代 数円以下）　▾</div>
+    <div class="p-lb">BTCアドレス／SOLアドレス（任意）</div>
+    <div class="p-in ph">空欄のままでOK（あとから追加できます）</div>
+    <div class="p-lb">サーバー保存の合言葉</div>
+    <div class="p-in ph">1台だけで使うなら空欄でOK</div>
+    <div class="p-btn">保存</div>
+    <div class="p-ok">✓ 保存しました。実入金の検知が有効です。</div>
+  </div>
+  <ul class="legend">
+    <li><span class="n">1</span><div><b>お店の名前</b>を入力。レシートPDFの一番上に印字されます。</div></li>
+    <li><span class="n">2</span><div><b>コピーしたアドレスを貼り付け。</b>入力欄を長押し→「ペースト」。<small>1文字でも違うとお金が届かないので、必ず貼り付けで。手打ちはしないでください。</small></div></li>
+    <li><span class="n">3</span><div><b>ネットワークはPolygonのまま</b>でOK。手数料が数円以下で一番安く済みます。</div></li>
+    <li><span class="n">4</span><div><b>BTC・SOLは空欄でOK。</b>ビットコイン等でも受け取りたくなったら、そのウォレットのアドレスをあとから追加します。</div></li>
+    <li><span class="n">5</span><div><b>「保存」をタップ。</b>緑の文字が出て、右上の「デモ」が「POLYGON」に変われば設定完了です。</div></li>
+  </ul>
+</section>
+
+<!-- STEP5 -->
+<section class="step">
+  <div class="stepnum"><span class="n">5</span><h2>100円でテストする（いちばん大事）</h2></div>
+  <p>お客様に使ってもらう前に、<b>自分のウォレットから自分のお店へ</b>少額を送って、一連の流れを確認しましょう。</p>
+  <div class="card">
+    <p style="margin:0">① お会計タブで「＋金額を直接入力」→ <b>100</b> と入れて「QRコードで請求する」<br>
+    ② 表示されたQRを<b>自分のスマホのカメラ</b>で読み取る → 支払いページが開く<br>
+    ③ 「ウォレットで支払う」→ ウォレットで内容を確認して承認<br>
+    ④ 1分ほどでレジ側が下の画面になれば成功です</p>
+  </div>
+  <div class="phone blue" style="text-align:center;padding:22px">
+    <div class="stampmini">済</div>
+    <div style="font-size:22px;font-weight:bold">¥100</div>
+    <div style="color:#CFF7E8;font-weight:bold;font-size:12px;letter-spacing:.2em;margin-top:4px">入金を確認しました</div>
+  </div>
+  <div class="tip"><b>うまくいったら:</b> 「商品」タブでお店のメニューと価格を登録すれば、営業で使えます。売上タブからレシートPDFの発行もできます。</div>
+</section>
+
+<!-- 複数端末 -->
+<section class="step">
+  <div class="stepnum"><span class="n">＋</span><h2>レジと事務所など、2台以上で使うとき</h2></div>
+  <p>api.php をメモ帳などで開き、上のほうにあるこの1行を、<b>お店だけの合言葉</b>に書き換えてアップロードし直します。</p>
+  <div class="codebox">$SYNC_KEY = '<span class="del">CHANGE-ME</span>';<br>　　　↓<br>$SYNC_KEY = '<span class="add">marufuku-7x2kp9</span>';　← 例。推測されにくい文字列に</div>
+  <div class="arrow">↓</div>
+  <p style="margin-top:0">そのあと、<b>それぞれの端末</b>の設定タブ「サーバー保存の合言葉」に同じ文字列を入れて保存すると、商品・設定・売上が全端末で共有されます。</p>
+</section>
+
+<!-- FAQ -->
+<section class="step">
+  <div class="stepnum"><span class="n">?</span><h2>うまくいかないときは</h2></div>
+  <div class="card"><dl class="faq" style="margin:0">
+    <dt>右上に「デモ」と出たまま</dt>
+    <dd>アドレスが保存されていません。設定タブでアドレスを貼り直して「保存」を押し、緑の文字が出るか確認してください。</dd>
+    <dt>保存したのに、開き直すと消えている</dt>
+    <dd>ブラウザの「プライベートブラウズ」で開いていると消えます。通常のタブで開き直してください。2台以上で使うなら合言葉の設定（上記＋）が確実です。</dd>
+    <dt>お客様のスマホでQRを読んでもページが開かない</dt>
+    <dd>サイトが「https」になっているか確認してください。「安全ではありません」と出る状態だと、一部のスマホでうまく動きません。</dd>
+    <dt>支払われたのに「済」にならない</dt>
+    <dd>1〜2分お待ちください。それでも変わらないときは、売上タブの「オンチェーン履歴」で入金自体は確認できます。金額とネットワークが合っているかもご確認を。</dd>
+  </dl></div>
+</section>
+
+<footer>
+  チェーンレジは JPYC株式会社・各ブロックチェーン・ウォレット提供者とは無関係の非公式ツールです。<br>
+  レート換算は参考値です。ご利用は自己責任でお願いします。詳しくは同梱の README.txt をご覧ください。
+</footer>
+</div>
+</body>
+</html>
