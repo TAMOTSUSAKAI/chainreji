@@ -93,6 +93,10 @@ details[open] .openhint{display:none;}
   border-radius:8px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;
   text-decoration:none;display:inline-block;}
 .noresult{text-align:center;color:var(--dim);font-size:13.5px;padding:40px 0;}
+figure.fig{margin:10px 0 0;padding:14px 10px 10px;background:#FAFDFF;
+  border:1px solid var(--line);border-radius:12px;}
+.fig svg{display:block;width:100%;max-width:430px;height:auto;margin:0 auto;font-family:inherit;}
+.fig figcaption{font-size:11.5px;color:var(--dim);margin-top:8px;text-align:center;line-height:1.6;}
 
 /* ── 通知セクション ── */
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
@@ -222,6 +226,35 @@ const LAWS = [
   ],
   penalty:"反則金を納めれば刑事罰にはなりませんが、納めないと刑事手続きに進みます。",
   note:"通勤・配達で自転車を使う人は要注意。特に「ながらスマホ」「イヤホン」「右側通行」「歩道の徐行違反」は取り締まりの重点項目とされています。",
+  fig:{
+    cap:"違反の内容によって「青切符（反則金）」か「赤切符（刑事罰）」に分かれます。16歳未満はどちらの対象にもならず、指導・警告を受けます。",
+    svg:`<svg viewBox="0 0 400 335" role="img" aria-label="自転車の違反が青切符になるか赤切符になるかの判定の流れ">
+<defs><marker id="mAr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="110" y="8" width="180" height="48" rx="10" fill="#EAF6FC" stroke="#00A3E0"/>
+<text x="200" y="28" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#20313D">自転車で交通違反</text>
+<text x="200" y="46" text-anchor="middle" font-size="11" fill="#7C8B96">（16歳以上が対象）</text>
+<line x1="200" y1="56" x2="200" y2="80" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr1)"/>
+<rect x="100" y="84" width="200" height="48" rx="10" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="200" y="104" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#20313D">酒気帯びなど</text>
+<text x="200" y="121" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#20313D">悪質・危険な違反？</text>
+<polyline points="150,132 105,158 105,180" fill="none" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr1)"/>
+<text x="96" y="168" text-anchor="end" font-size="11.5" font-weight="bold" fill="#149D6F">いいえ</text>
+<polyline points="250,132 295,158 295,180" fill="none" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr1)"/>
+<text x="304" y="168" font-size="11.5" font-weight="bold" fill="#C0392B">はい</text>
+<rect x="16" y="184" width="178" height="102" rx="10" fill="#EAF6FC" stroke="#006C99" stroke-width="1.5"/>
+<text x="105" y="207" text-anchor="middle" font-size="13" font-weight="bold" fill="#006C99">青切符（反則金）</text>
+<text x="105" y="228" text-anchor="middle" font-size="11" fill="#20313D">例：ながらスマホ 12,000円</text>
+<text x="105" y="245" text-anchor="middle" font-size="11" fill="#20313D">信号無視 6,000円</text>
+<text x="105" y="270" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#149D6F">納めれば刑事罰なし</text>
+<rect x="206" y="184" width="178" height="102" rx="10" fill="#FDF1EF" stroke="#C0392B" stroke-width="1.5"/>
+<text x="295" y="207" text-anchor="middle" font-size="13" font-weight="bold" fill="#C0392B">赤切符（刑事罰）</text>
+<text x="295" y="228" text-anchor="middle" font-size="11" fill="#20313D">酒気帯び運転や</text>
+<text x="295" y="245" text-anchor="middle" font-size="11" fill="#20313D">事故につながる危険行為</text>
+<text x="295" y="270" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#C0392B">前科がつく可能性</text>
+<polyline points="105,286 105,305 295,305 295,290" fill="none" stroke="#C0392B" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#mAr1)"/>
+<text x="200" y="323" text-anchor="middle" font-size="11" fill="#C0392B">反則金を納めないと刑事手続きへ</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -271,6 +304,33 @@ const LAWS = [
   ],
   penalty:"選任・届出を怠ると行政処分や罰則の対象になり得ます。",
   note:"厳密には道路交通法ではなく「貨物自動車運送事業法」の改正ですが、軽貨物ドライバーに影響が大きいため掲載しています。1人親方（個人事業主）も対象です。",
+  fig:{
+    cap:"事業者が安全管理者を選んで届け出ると、3つの義務がセットでついてきます。1人親方は自分自身を選任します。",
+    svg:`<svg viewBox="0 0 400 270" role="img" aria-label="軽貨物事業者が安全管理者を選任し、記録保存・事故報告・新人指導を行う体制図">
+<defs><marker id="mAr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="130" y="8" width="140" height="46" rx="10" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="200" y="27" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#20313D">軽貨物事業者</text>
+<text x="200" y="45" text-anchor="middle" font-size="10.5" fill="#7C8B96">（黒ナンバー・個人も）</text>
+<line x1="200" y1="54" x2="200" y2="78" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr5)"/>
+<text x="208" y="70" font-size="11" fill="#7C8B96">選任して国交省へ届出</text>
+<rect x="105" y="82" width="190" height="50" rx="10" fill="#EAF6FC" stroke="#006C99" stroke-width="1.5"/>
+<text x="200" y="103" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#006C99">貨物軽自動車安全管理者</text>
+<text x="200" y="122" text-anchor="middle" font-size="10.5" fill="#20313D">指定講習の受講が必要</text>
+<line x1="160" y1="132" x2="70" y2="168" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr5)"/>
+<line x1="200" y1="132" x2="200" y2="168" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr5)"/>
+<line x1="240" y1="132" x2="330" y2="168" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr5)"/>
+<rect x="8" y="172" width="120" height="54" rx="10" fill="#FFFFFF" stroke="#00A3E0" stroke-width="1.5"/>
+<text x="68" y="194" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">事故の記録を</text>
+<text x="68" y="212" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">3年間保存</text>
+<rect x="140" y="172" width="120" height="54" rx="10" fill="#FFFFFF" stroke="#00A3E0" stroke-width="1.5"/>
+<text x="200" y="194" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">重大事故を</text>
+<text x="200" y="212" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">国交省へ報告</text>
+<rect x="272" y="172" width="120" height="54" rx="10" fill="#FFFFFF" stroke="#00A3E0" stroke-width="1.5"/>
+<text x="332" y="194" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">新人ドライバーに</text>
+<text x="332" y="212" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">指導・適性診断</text>
+<text x="200" y="254" text-anchor="middle" font-size="11" fill="#7C8B96">すでに営業中の事業者は 2027年3月末までに対応</text>
+</svg>`
+  },
   source:{label:"国土交通省 自動車局", url:"https://www.mlit.go.jp/jidosha/index.html"}
 },
 {
@@ -288,6 +348,22 @@ const LAWS = [
   ],
   penalty:"いずれも「反則金」ではなく刑事罰。前科がつく可能性があります。",
   note:"配達中にスマホでナビを見る場合は、ホルダーに固定して「注視しない」ことが大前提。信号待ちでも道路上での操作は避けるのが安全です。",
+  fig:{
+    cap:"分かれ目は「手に持つか」「じっと見るか」。ホルダーに固定していても、画面を注視すれば違反になります。",
+    svg:`<svg viewBox="0 0 400 180" role="img" aria-label="自転車のスマホ使用で罰則対象になる行為とならない行為の比較">
+<rect x="12" y="10" width="182" height="152" rx="12" fill="#FDF1EF" stroke="#C0392B" stroke-width="1.5"/>
+<text x="103" y="44" text-anchor="middle" font-size="22" font-weight="bold" fill="#C0392B">✕</text>
+<text x="103" y="76" text-anchor="middle" font-size="12" fill="#20313D">手に持って通話する</text>
+<text x="103" y="98" text-anchor="middle" font-size="12" fill="#20313D">画面をじっと見る</text>
+<text x="103" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="#C0392B">懲役・罰金の対象</text>
+<rect x="206" y="10" width="182" height="152" rx="12" fill="#EDF8F2" stroke="#149D6F" stroke-width="1.5"/>
+<text x="297" y="44" text-anchor="middle" font-size="22" font-weight="bold" fill="#149D6F">○</text>
+<text x="297" y="76" text-anchor="middle" font-size="12" fill="#20313D">ホルダーに固定して</text>
+<text x="297" y="94" text-anchor="middle" font-size="12" fill="#20313D">ちらっと確認する</text>
+<text x="297" y="116" text-anchor="middle" font-size="12" fill="#20313D">停止中に操作する</text>
+<text x="297" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="#149D6F">罰則の対象外</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -304,6 +380,25 @@ const LAWS = [
   ],
   penalty:"無免許運転は3年以下の懲役または50万円以下の罰金。",
   note:"通販で「免許不要」をうたうフル電動自転車には要注意。電動アシスト自転車（アシスト比率が基準内）とは別物です。",
+  fig:{
+    cap:"見た目が自転車でも、モーターだけで走れる車両は法律上「原付」。ペダルをこいでいても扱いは変わりません。",
+    svg:`<svg viewBox="0 0 400 175" role="img" aria-label="モペットは見た目が自転車でも法律上は原付として扱われることを示す図">
+<defs><marker id="mAr6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="12" y="30" width="150" height="110" rx="12" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="87" y="18" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#7C8B96">見た目</text>
+<text x="87" y="70" text-anchor="middle" font-size="12" fill="#20313D">ペダル付きで</text>
+<text x="87" y="90" text-anchor="middle" font-size="12" fill="#20313D">自転車そっくり</text>
+<text x="87" y="120" text-anchor="middle" font-size="11" fill="#7C8B96">「フル電動自転車」等</text>
+<line x1="166" y1="85" x2="228" y2="85" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr6)"/>
+<text x="197" y="76" text-anchor="middle" font-size="10.5" fill="#7C8B96">法律上は</text>
+<rect x="234" y="30" width="154" height="110" rx="12" fill="#FDF1EF" stroke="#C0392B" stroke-width="1.5"/>
+<text x="311" y="18" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#C0392B">法律上の扱い</text>
+<text x="311" y="60" text-anchor="middle" font-size="13" font-weight="bold" fill="#C0392B">原付バイク</text>
+<text x="311" y="86" text-anchor="middle" font-size="11.5" fill="#20313D">免許・ヘルメット</text>
+<text x="311" y="104" text-anchor="middle" font-size="11.5" fill="#20313D">ナンバー・自賠責が必要</text>
+<text x="311" y="128" text-anchor="middle" font-size="10.5" fill="#C0392B">歩道走行・ノーヘルはNG</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -320,6 +415,28 @@ const LAWS = [
   ],
   penalty:"安全運転管理者の業務違反は是正命令・公安委員会による解任命令等の対象。",
   note:"2022年4月に始まった目視等での確認義務に、検知器の使用が追加された形。直行直帰の場合は電話+携帯型検知器での確認も認められています。",
+  fig:{
+    cap:"1日の流れ。2022年4月から「目視等」、2023年12月からは「検知器」でのチェックも必須になりました。",
+    svg:`<svg viewBox="0 0 400 150" role="img" aria-label="運転前チェック、運転、運転後チェック、記録保存という1日の流れ">
+<defs><marker id="mAr3b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="8" y="26" width="84" height="58" rx="10" fill="#EAF6FC" stroke="#006C99" stroke-width="1.5"/>
+<text x="50" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#006C99">運転前</text>
+<text x="50" y="70" text-anchor="middle" font-size="10.5" fill="#20313D">目視＋検知器</text>
+<line x1="94" y1="55" x2="110" y2="55" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr3b)"/>
+<rect x="112" y="26" width="80" height="58" rx="10" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="152" y="61" text-anchor="middle" font-size="12" font-weight="bold" fill="#20313D">運転</text>
+<line x1="194" y1="55" x2="210" y2="55" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr3b)"/>
+<rect x="212" y="26" width="84" height="58" rx="10" fill="#EAF6FC" stroke="#006C99" stroke-width="1.5"/>
+<text x="254" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#006C99">運転後</text>
+<text x="254" y="70" text-anchor="middle" font-size="10.5" fill="#20313D">目視＋検知器</text>
+<line x1="298" y1="55" x2="314" y2="55" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr3b)"/>
+<rect x="316" y="26" width="76" height="58" rx="10" fill="#FFFFFF" stroke="#00A3E0" stroke-width="1.5"/>
+<text x="354" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#20313D">記録</text>
+<text x="354" y="70" text-anchor="middle" font-size="10.5" fill="#20313D">1年間保存</text>
+<text x="200" y="116" text-anchor="middle" font-size="11" fill="#C0392B" font-weight="bold">検知器は「常時有効」に保つこと（故障放置はNG）</text>
+<text x="200" y="136" text-anchor="middle" font-size="10.5" fill="#7C8B96">直行直帰のときは電話＋携帯型検知器でもOK</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -337,6 +454,34 @@ const LAWS = [
   ],
   penalty:"信号無視・飲酒運転などは自動車と同様に取り締まり対象。16歳未満に乗らせた提供者にも罰則。",
   note:"基準を満たさない電動キックボードは従来どおり原付扱い（免許・ヘルメット必須）。購入・レンタル時に区分を確認しましょう。",
+  fig:{
+    cap:"出せるスピードが上がるほど、必要なもの（免許・ヘルメット）が増える仕組みです。特定小型はナンバー・自賠責が必要。※電動アシスト自転車の24km/hは「アシストが効く上限」で、車両の速度制限ではありません。",
+    svg:`<svg viewBox="0 0 400 255" role="img" aria-label="電動アシスト自転車・特定小型原付・原付の最高速度と必要な免許の比較">
+<line x1="28" y1="26" x2="28" y2="198" stroke="#D3E9F4"/>
+<line x1="112" y1="26" x2="112" y2="198" stroke="#D3E9F4"/>
+<line x1="196" y1="26" x2="196" y2="198" stroke="#D3E9F4"/>
+<line x1="280" y1="26" x2="280" y2="198" stroke="#D3E9F4"/>
+<line x1="364" y1="26" x2="364" y2="198" stroke="#D3E9F4"/>
+<text x="28" y="216" text-anchor="middle" font-size="10.5" fill="#7C8B96">0</text>
+<text x="112" y="216" text-anchor="middle" font-size="10.5" fill="#7C8B96">10</text>
+<text x="196" y="216" text-anchor="middle" font-size="10.5" fill="#7C8B96">20</text>
+<text x="280" y="216" text-anchor="middle" font-size="10.5" fill="#7C8B96">30</text>
+<text x="364" y="216" text-anchor="middle" font-size="10.5" fill="#7C8B96">40</text>
+<text x="200" y="240" text-anchor="middle" font-size="11" fill="#7C8B96">最高速度（km/h）</text>
+<text x="28" y="42" font-size="12" font-weight="bold" fill="#20313D">電動アシスト自転車</text>
+<text x="372" y="42" text-anchor="end" font-size="10.5" fill="#149D6F" font-weight="bold">免許不要・ナンバー不要</text>
+<rect x="28" y="48" width="202" height="14" rx="7" fill="#B9C6CF"/>
+<text x="238" y="60" font-size="10.5" fill="#7C8B96">〜24</text>
+<text x="28" y="98" font-size="12" font-weight="bold" fill="#20313D">電動キックボード（特定小型）</text>
+<text x="372" y="98" text-anchor="end" font-size="10.5" fill="#00A3E0" font-weight="bold">16歳〜・免許不要</text>
+<rect x="28" y="104" width="168" height="14" rx="7" fill="#00A3E0"/>
+<text x="204" y="116" font-size="10.5" fill="#7C8B96">〜20</text>
+<text x="28" y="154" font-size="12" font-weight="bold" fill="#20313D">原付・モペット・新基準原付</text>
+<text x="372" y="154" text-anchor="end" font-size="10.5" fill="#C0392B" font-weight="bold">免許・ヘルメット必須</text>
+<rect x="28" y="160" width="252" height="14" rx="7" fill="#006C99"/>
+<text x="288" y="172" font-size="10.5" fill="#7C8B96">〜30</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -369,6 +514,29 @@ const LAWS = [
   ],
   penalty:"安全運転管理者の未選任は50万円以下の罰金。",
   note:"緑ナンバー（運送事業者）にはもともと点呼での酒気帯び確認義務があり、これが白ナンバーにも広がった形です。",
+  fig:{
+    cap:"どちらか一方に当てはまれば対象。安全運転管理者を選び、毎日のチェックと記録が義務になります。",
+    svg:`<svg viewBox="0 0 400 240" role="img" aria-label="アルコールチェック義務の対象になる事業所の条件と義務の流れ">
+<defs><marker id="mAr3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="14" y="10" width="176" height="52" rx="10" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="102" y="32" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">乗車定員11人以上の車を</text>
+<text x="102" y="50" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">1台以上使っている</text>
+<rect x="210" y="10" width="176" height="52" rx="10" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="298" y="32" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">その他の車（社用車等）を</text>
+<text x="298" y="50" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#20313D">5台以上使っている</text>
+<text x="200" y="76" text-anchor="middle" font-size="11" font-weight="bold" fill="#7C8B96">または</text>
+<polyline points="102,62 102,82 200,82" fill="none" stroke="#5B6B77" stroke-width="1.5"/>
+<polyline points="298,62 298,82 200,82" fill="none" stroke="#5B6B77" stroke-width="1.5"/>
+<line x1="200" y1="82" x2="200" y2="102" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr3a)"/>
+<rect x="100" y="106" width="200" height="48" rx="10" fill="#EAF6FC" stroke="#006C99" stroke-width="1.5"/>
+<text x="200" y="127" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#006C99">安全運転管理者を選任</text>
+<text x="200" y="146" text-anchor="middle" font-size="10.5" fill="#7C8B96">（未選任は50万円以下の罰金）</text>
+<line x1="200" y1="154" x2="200" y2="174" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mAr3a)"/>
+<rect x="60" y="178" width="280" height="52" rx="10" fill="#FFFFFF" stroke="#00A3E0" stroke-width="1.5"/>
+<text x="200" y="200" text-anchor="middle" font-size="12" font-weight="bold" fill="#20313D">運転の前後に酒気帯びチェック</text>
+<text x="200" y="219" text-anchor="middle" font-size="11" fill="#20313D">確認した記録を1年間保存</text>
+</svg>`
+  },
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
@@ -529,6 +697,7 @@ function render(){
       <div class="cbody">
         <h4>ポイント</h4>
         <ul>${l.points.map(p=>`<li>${p}</li>`).join("")}</ul>
+        ${l.fig?`<h4>図解でわかる</h4><figure class="fig">${l.fig.svg}<figcaption>${l.fig.cap}</figcaption></figure>`:""}
         ${l.penalty?`<h4>罰則・注意</h4><div class="penalty"><b>⚠</b> ${l.penalty}</div>`:""}
         ${l.note?`<h4>ひとこと解説</h4><p style="font-size:13.5px;margin:0;">${l.note}</p>`:""}
         <div class="srcline">
