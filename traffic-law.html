@@ -79,6 +79,7 @@ header.hero{background:linear-gradient(180deg,#0090D4,#005E92);color:#fff;
   background:var(--soft);color:var(--sky-deep);}
 .tag.who{background:#EDF8F2;color:var(--ok);}
 .tag.fut{background:var(--future-soft);color:var(--future);}
+.tag.imp{background:#FDF1EF;color:var(--err);}
 .openhint{font-size:11px;color:var(--dim);margin-top:8px;}
 details[open] .openhint{display:none;}
 .cbody{padding:0 16px 16px;border-top:1px dashed var(--line);margin:0 0;}
@@ -132,8 +133,8 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
 <header class="hero">
   <div class="kicker">TRAFFIC LAW GUIDE</div>
   <h1>道路交通法 改正なび</h1>
-  <p>毎年のように変わる交通ルールを、施行日つきの年表でわかりやすく。<br>
-     クルマ・軽貨物・自転車、あなたに関係する改正だけ絞り込めます。</p>
+  <p>毎年のように変わる交通ルールと運送の制度を、施行日つきの年表でわかりやすく。<br>
+     軽貨物運送に関わるものは「重要度順」に並べ替えて確認できます。</p>
   <div class="upd">最終更新日：<span id="updDate"></span>／出典：警察庁・国土交通省・e-Gov法令検索</div>
 </header>
 
@@ -150,8 +151,11 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
     <div class="chips" id="whoChips">
       <span class="lb">だれに関係する？</span>
     </div>
+    <div class="chips" id="sortChips">
+      <span class="lb">並び順</span>
+    </div>
     <div class="chips" id="yearChips">
-      <span class="lb">施行された年</span>
+      <span class="lb">年で絞り込む</span>
     </div>
     <div class="hitcount" id="hitcount"></div>
   </div>
@@ -184,16 +188,25 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
         <span class="d">道路交通法改正の解説資料・パンフレットの大元。改正の公式発表はここが最速。</span></li>
       <li><a href="https://laws.e-gov.go.jp/law/335AC0000000105" target="_blank" rel="noopener">e-Gov法令検索「道路交通法」</a>
         <span class="d">条文そのもの。施行日ごとの新旧を切り替えて読めます。</span></li>
-      <li><a href="https://www.mlit.go.jp/jidosha/index.html" target="_blank" rel="noopener">国土交通省 自動車局</a>
-        <span class="d">貨物軽自動車運送事業（黒ナンバー）など、運送事業者向けの制度改正はこちら。</span></li>
+      <li><a href="https://www.mlit.go.jp/jidosha/jidosha_tk2_000172.html" target="_blank" rel="noopener">国土交通省 貨物軽自動車運送事業の安全対策</a>
+        <span class="d">黒ナンバー事業者の義務（安全管理者・記録・事故報告）の大元。様式もここから。</span></li>
+      <li><a href="https://www.nasva.go.jp/fusegu/kamotsu_kousyu.html" target="_blank" rel="noopener">NASVA 貨物軽自動車安全管理者講習</a>
+        <span class="d">安全管理者の講習の日程と申込み。定員があるため早めの予約を。</span></li>
+      <li><a href="https://www.mlit.go.jp/jidosha/jidosha_mn4_000019.html" target="_blank" rel="noopener">国土交通省 トラック適正化二法</a>
+        <span class="d">運送契約の書面交付、実運送体制管理簿、多重下請けの制限などの解説資料。</span></li>
+      <li><a href="https://www.mlit.go.jp/jidosha/jidosha_tk4_000118.html" target="_blank" rel="noopener">国土交通省「標準的な運賃」</a>
+        <span class="d">運賃を交渉するときの国が示す目安。荷待ち・附帯作業の加算の考え方も。</span></li>
       <li><a href="https://jaf.or.jp/common/kuruma-qa/category-construction" target="_blank" rel="noopener">JAF クルマ何でも質問箱</a>
         <span class="d">改正内容をやさしい言葉で解説。一般ドライバー向けの読み物として便利。</span></li>
     </ul>
   </div>
 
   <footer>
-    ※このページは道路交通法等の改正をわかりやすく紹介する目安の早見表です。反則金額・罰則・対象範囲は
-    地域や車両区分によって異なる場合があります。正確な内容は警察庁・国土交通省の公表資料および官報でご確認ください。<br>
+    ※このページは道路交通法のほか、軽貨物運送に影響の大きい貨物自動車運送事業法・フリーランス新法・
+    労働時間の基準・税制なども含めた目安の早見表です。反則金額・罰則・対象範囲・経過措置は、
+    事業の形態や車両区分によって異なる場合があります。正確な内容は警察庁・国土交通省・厚生労働省・
+    国税庁の公表資料および官報でご確認ください。税務の判断は税理士、契約の判断は専門家にご相談ください。<br>
+    ※「軽貨物の重要度」は、黒ナンバーで働く方にとっての影響の大きさを目安として3段階で示したものです。<br>
     ※内容の追加・修正は、このHTMLファイル内の「LAWS」というデータ一覧を編集するだけで反映されます。
   </footer>
 
@@ -211,8 +224,220 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
 const UPDATED = "2026-08-30";   // このページの最終更新日
 
 const LAWS = [
+
+/* ───── 軽貨物運送に関わる制度（重要度高） ───── */
 {
-  id:"bicycle-blue-ticket-2026",
+  id:"kei-cargo-deadline-2027", imp:3,
+  date:"2027-03-31",
+  kind:"期限",
+  title:"【対応期限】既存の軽貨物事業者は安全管理者の選任・届出をこの日までに",
+  sub:"2025年3月末までに届出済みの黒ナンバー事業者の猶予が切れます",
+  who:["軽貨物・運送業"],
+  keywords:"貨物軽自動車安全管理者 選任 届出 経過措置 猶予 期限 2027 黒ナンバー 講習 NASVA",
+  points:[
+    "2025年3月31日までに貨物軽自動車運送事業の経営届出をしていた事業者は、安全管理者の選任・届出が2027年3月31日まで猶予されています",
+    "この日までに「講習の受講 → 安全管理者の選任 → 運輸支局へ届出」まで終わらせる必要があります",
+    "講習はNASVA（自動車事故対策機構）等で実施。定員があるため直前は予約が取りにくくなります",
+    "選任後も2年ごとの定期講習の受講が必要です",
+    "車両1台の個人事業主（一人親方）も対象で、自分自身を安全管理者として選任します"
+  ],
+  penalty:"未選任のまま期限を過ぎると100万円以下の罰金のほか、是正勧告・車両の使用停止処分などの対象になり得ます。",
+  note:"軽貨物事業者にとって当面いちばん重要な期限です。講習は受講してすぐ選任できるわけではないので、期限の半年前には予約を取っておくのが安全です。2025年4月以降に新規で届出した事業者にはこの猶予はなく、届出時から選任が必要です。",
+  fig:{
+    cap:"いつ届出した事業者かで期限が変わります。既存事業者の猶予は2027年3月31日、特別指導・適性診断はさらに1年後の2028年3月31日までです。",
+    svg:`<svg viewBox="0 0 400 240" role="img" aria-label="軽貨物事業者の安全管理者の選任期限と特別指導の期限を示す時系列図">
+<defs><marker id="mArD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<line x1="20" y1="52" x2="380" y2="52" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mArD)"/>
+<line x1="60" y1="44" x2="60" y2="60" stroke="#5B6B77" stroke-width="1.5"/>
+<text x="60" y="36" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#7C8B96">2025/4/1</text>
+<text x="60" y="76" text-anchor="middle" font-size="10" fill="#7C8B96">制度スタート</text>
+<line x1="232" y1="44" x2="232" y2="60" stroke="#C0392B" stroke-width="2"/>
+<text x="232" y="36" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#C0392B">2027/3/31</text>
+<line x1="348" y1="44" x2="348" y2="60" stroke="#8A6512" stroke-width="2"/>
+<text x="348" y="36" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#8A6512">2028/3/31</text>
+<rect x="16" y="94" width="368" height="42" rx="10" fill="#EAF6FC" stroke="#006C99"/>
+<text x="28" y="112" font-size="11.5" font-weight="bold" fill="#006C99">2025年4月以降に新規で届出</text>
+<text x="28" y="129" font-size="11" fill="#20313D">届出のときから選任が必要（猶予なし）</text>
+<rect x="16" y="144" width="368" height="42" rx="10" fill="#FDF1EF" stroke="#C0392B"/>
+<text x="28" y="162" font-size="11.5" font-weight="bold" fill="#C0392B">2025年3月末までに届出済み（既存）</text>
+<text x="28" y="179" font-size="11" fill="#20313D">2027年3月31日までに選任・届出を済ませる</text>
+<rect x="16" y="194" width="368" height="38" rx="10" fill="#FFF7E8" stroke="#F0DCB0"/>
+<text x="28" y="211" font-size="11.5" font-weight="bold" fill="#8A6512">特別指導・適性診断は1年長い猶予</text>
+<text x="28" y="227" font-size="11" fill="#20313D">2028年3月31日まで</text>
+</svg>`
+  },
+  source:{label:"国土交通省 貨物軽自動車運送事業の安全対策", url:"https://www.mlit.go.jp/jidosha/jidosha_tk2_000172.html"}
+},
+{
+  id:"kei-cargo-shido-2028", imp:3,
+  date:"2028-03-31",
+  kind:"期限",
+  title:"【対応期限】新人・高齢・事故を起こしたドライバーへの特別指導と適性診断",
+  sub:"既存の軽貨物事業者はこの日までに実施体制を整える必要があります",
+  who:["軽貨物・運送業"],
+  keywords:"特別指導 適性診断 初任運転者 高齢運転者 事故惹起運転者 軽貨物 猶予 2028 NASVA",
+  points:[
+    "新しく雇った（委託した）ドライバー、65歳以上のドライバー、事故を起こしたドライバーの3種類が「特定運転者」として指導・診断の対象",
+    "特別指導（座学等）とNASVA等の適性診断をセットで実施します",
+    "既存事業者の猶予は2028年3月31日まで（安全管理者の選任より1年長い）",
+    "実施した記録は保存が必要です"
+  ],
+  penalty:"未実施は輸送安全規則違反として行政処分の対象になり得ます。",
+  note:"1人で走っている一人親方でも、自分が「初任運転者」や「高齢運転者」に当たれば対象です。人を増やす予定があるなら、早めに手順を作っておくと後がラクです。",
+  source:{label:"国土交通省 貨物軽自動車運送事業の安全対策", url:"https://www.mlit.go.jp/jidosha/jidosha_tk2_000172.html"}
+},
+{
+  id:"truck-law-shitauke-2026", imp:3,
+  date:"2026-04-01",
+  title:"多重下請けの制限スタート（再委託は2回まで）",
+  sub:"利用運送事業者にも書面交付と実運送体制管理簿の義務が拡大",
+  who:["軽貨物・運送業"],
+  keywords:"多重下請け 2次請け 再委託 実運送体制管理簿 利用運送 元請 貨物自動車運送事業法 トラック新法",
+  points:[
+    "再委託の回数を2回以内（実運送を担うのは3次請けまで）に抑える努力義務が、運送事業者・利用運送事業者の双方に課されました",
+    "これまで一般貨物の元請だけに課されていた「実運送体制管理簿」の作成義務が、貨物利用運送事業者（フォワーダー）にも拡大",
+    "運送契約の書面交付義務も利用運送事業者に拡大。2026年4月1日以降の個別の運送依頼には、施行前に基本契約を結んでいた場合でも新しい書面交付義務がかかります"
+  ],
+  penalty:"",
+  note:"軽貨物は下請けの末端に置かれやすく、間に何社も入ることで手取りが削られてきました。この改正は「何次請けなのか」を書面と管理簿で見えるようにするもの。仕事を受けるとき、自分が何次請けなのかを確認できる根拠になります。",
+  fig:{
+    cap:"荷主から実際に運ぶ人までの間に入れるのは2社まで。軽貨物が置かれやすい4次請け以降は努力義務の範囲外になります。",
+    svg:`<svg viewBox="0 0 400 250" role="img" aria-label="荷主から元請、2次請け、3次請けまでが再委託2回以内の範囲で、4次請け以降は範囲外であることを示す図">
+<defs><marker id="mArS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<rect x="16" y="212" width="368" height="30" rx="8" fill="#FDF1EF" stroke="#C0392B" stroke-dasharray="4 3"/>
+<text x="200" y="232" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#C0392B">4次請け以降 — 努力義務の範囲外</text>
+<rect x="90" y="8" width="220" height="34" rx="9" fill="#FFFFFF" stroke="#5B6B77"/>
+<text x="200" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#20313D">荷主</text>
+<line x1="200" y1="42" x2="200" y2="58" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mArS)"/>
+<rect x="90" y="62" width="220" height="34" rx="9" fill="#EAF6FC" stroke="#006C99"/>
+<text x="200" y="84" text-anchor="middle" font-size="12" font-weight="bold" fill="#006C99">元請（実運送体制管理簿を作る）</text>
+<line x1="200" y1="96" x2="200" y2="112" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mArS)"/>
+<text x="212" y="108" font-size="10" fill="#7C8B96">再委託1回目</text>
+<rect x="90" y="116" width="220" height="34" rx="9" fill="#EAF6FC" stroke="#006C99"/>
+<text x="200" y="138" text-anchor="middle" font-size="12" font-weight="bold" fill="#20313D">2次請け</text>
+<line x1="200" y1="150" x2="200" y2="166" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mArS)"/>
+<text x="212" y="162" font-size="10" fill="#7C8B96">再委託2回目</text>
+<rect x="90" y="170" width="220" height="34" rx="9" fill="#EDF8F2" stroke="#149D6F" stroke-width="1.5"/>
+<text x="200" y="192" text-anchor="middle" font-size="12" font-weight="bold" fill="#149D6F">3次請け＝ここまでで実際に運ぶ</text>
+<line x1="20" y1="66" x2="20" y2="200" stroke="#149D6F" stroke-width="2"/>
+<text x="12" y="140" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#149D6F" transform="rotate(-90 12 140)">再委託は2回まで</text>
+</svg>`
+  },
+  source:{label:"国土交通省 トラック適正化二法", url:"https://www.mlit.go.jp/jidosha/jidosha_mn4_000019.html"}
+},
+{
+  id:"truck-law-shomen-2025", imp:3,
+  date:"2025-04-01",
+  title:"運送契約は書面交付が義務に（改正貨物自動車運送事業法）",
+  sub:"待機時間や附帯作業の料金も書面に書くことが必要になりました",
+  who:["軽貨物・運送業"],
+  keywords:"運送契約 書面交付 義務 実運送体制管理簿 附帯業務 燃料サーチャージ 荷待ち 元請 トラックGメン 2024年問題",
+  points:[
+    "運送契約を結ぶときは、役務の内容とその対価を記載した書面の交付が義務になりました",
+    "書面には運賃だけでなく、附帯業務料（積込み・荷降ろし・仕分け等）、待機時間の料金、燃料サーチャージなども区別して書きます",
+    "元請事業者には、実際に運ぶ事業者の名前などを記載した「実運送体制管理簿」の作成義務",
+    "荷主側にも、物流を効率化する取り組みの努力義務が課されました"
+  ],
+  penalty:"荷主の悪質な行為には、国土交通大臣による働きかけ・要請・勧告と社名公表の仕組みがあります（トラックGメン）。",
+  note:"「口約束で運んだが、待たされた分も無料の附帯作業もお金にならなかった」という軽貨物の典型的な悩みに、書面という根拠を与える改正です。まずは自分の契約書に待機料・附帯作業料の欄があるか確認を。",
+  source:{label:"国土交通省 改正貨物自動車運送事業法", url:"https://www.mlit.go.jp/jidosha/jidosha_mn4_000014.html"}
+},
+{
+  id:"freelance-law-2024", imp:3,
+  date:"2024-11-01",
+  title:"フリーランス新法 施行 — 一人親方の取引を守る法律",
+  sub:"報酬は納品から60日以内。条件の書面明示も義務に",
+  who:["軽貨物・運送業"],
+  keywords:"フリーランス新法 特定受託事業者 一人親方 個人事業主 書面 明示 60日 支払期日 中途解除 30日前 労災 特別加入 買いたたき",
+  points:[
+    "軽貨物の一人親方は「特定受託事業者」として法律の保護対象になります",
+    "発注する側は、業務の内容・報酬額・支払期日などを書面やメールで明示する義務があります",
+    "報酬は、荷物を運び終えた日（給付を受けた日）から数えて60日以内のできる限り早い日に支払う必要があります",
+    "6か月以上続く契約を途中で打ち切る・更新しない場合は、原則30日前までの予告が必要",
+    "報酬の一方的な減額、買いたたき、不当なやり直しの強要などが禁止されました",
+    "同じ2024年11月1日から、フリーランスも労災保険に特別加入できるようになりました"
+  ],
+  penalty:"違反した発注者には公正取引委員会・中小企業庁・厚生労働省による指導・勧告・命令があり、命令違反や検査拒否には50万円以下の罰金。",
+  note:"軽貨物ドライバーにとって、日々の取引条件に直結する最重要の法律のひとつです。条件を口頭でしか言われない、支払いが翌々月末より後になる、といった場合は法律違反の可能性があります。労災の特別加入も、業務中の事故に備えて検討の価値あり。",
+  fig:{
+    cap:"「運び終えた日」が起点です。発注側の締め日や請求書の到着日ではなく、給付を受けた日から60日以内に支払う必要があります。",
+    svg:`<svg viewBox="0 0 400 210" role="img" aria-label="発注時の書面明示、納品日から60日以内の支払い、中途解除の30日前予告を示すタイムライン">
+<defs><marker id="mArF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B77"/></marker></defs>
+<line x1="24" y1="70" x2="378" y2="70" stroke="#5B6B77" stroke-width="1.5" marker-end="url(#mArF)"/>
+<circle cx="60" cy="70" r="6" fill="#006C99"/>
+<text x="60" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="#006C99">発注</text>
+<text x="60" y="94" text-anchor="middle" font-size="10" fill="#7C8B96">条件を</text>
+<text x="60" y="107" text-anchor="middle" font-size="10" fill="#7C8B96">書面で明示</text>
+<circle cx="170" cy="70" r="6" fill="#149D6F"/>
+<text x="170" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="#149D6F">運び終えた日</text>
+<text x="170" y="94" text-anchor="middle" font-size="10" fill="#7C8B96">ここが起点</text>
+<circle cx="330" cy="70" r="6" fill="#C0392B"/>
+<text x="330" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="#C0392B">支払期限</text>
+<line x1="176" y1="126" x2="324" y2="126" stroke="#C0392B" stroke-width="1.5"/>
+<line x1="176" y1="120" x2="176" y2="132" stroke="#C0392B" stroke-width="1.5"/>
+<line x1="324" y1="120" x2="324" y2="132" stroke="#C0392B" stroke-width="1.5"/>
+<text x="250" y="146" text-anchor="middle" font-size="12" font-weight="bold" fill="#C0392B">60日以内</text>
+<rect x="16" y="166" width="368" height="34" rx="9" fill="#EAF6FC" stroke="#006C99"/>
+<text x="200" y="188" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#006C99">6か月以上の契約を打ち切るときは30日前までに予告</text>
+</svg>`
+  },
+  source:{label:"政府広報オンライン フリーランス新法", url:"https://www.gov-online.go.jp/article/202408/entry-6301.html"}
+},
+{
+  id:"kaizen-kijun-2024", imp:2,
+  date:"2024-04-01",
+  title:"改善基準告示の改正と時間外960時間の上限（2024年問題）",
+  sub:"ドライバーを雇う場合、拘束時間と休息期間のルールが厳しく",
+  who:["軽貨物・運送業"],
+  keywords:"改善基準告示 2024年問題 拘束時間 休息期間 11時間 時間外労働 960時間 上限規制 働き方改革",
+  points:[
+    "自動車運転者の時間外労働に年960時間の上限規制が適用されました",
+    "1日の休息期間は「継続8時間以上」から「継続11時間以上を基本とし、9時間を下回らない」に強化",
+    "1年の拘束時間・1か月の拘束時間にも上限が設けられました",
+    "長距離運行など一定の場合は拘束時間を延長できる特例があります"
+  ],
+  penalty:"時間外労働の上限規制に違反すると、6か月以下の懲役または30万円以下の罰金（労働基準法）。",
+  note:"改善基準告示と労働時間の規制は「労働者」に対するルールなので、一人で走っている一人親方本人には直接は適用されません。ただしドライバーを雇っている（雇用している）なら適用対象です。また、この規制で大型トラックが運べる量が減った分の荷物が軽貨物に流れてきており、業界全体の荷量と運賃に大きく影響しています。",
+  source:{label:"厚生労働省 自動車運転者の労働時間等の改善のための基準", url:"https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/gyosyu/roudoujouken05/index.html"}
+},
+{
+  id:"butsuryu-kouritsuka-2025", imp:2,
+  date:"2025-04-01",
+  title:"物流効率化法スタート — 荷待ち時間の短縮が努力義務に",
+  sub:"荷主にも「待たせない・積み下ろしを早く」の取り組み義務",
+  who:["軽貨物・運送業"],
+  keywords:"物流効率化法 流通業務総合効率化法 荷待ち時間 荷役 努力義務 特定事業者 中長期計画 荷主",
+  points:[
+    "「流通業務総合効率化法」が「物流効率化法」に改称され、2025年4月1日から施行されました",
+    "すべての荷主・物流事業者に、荷待ち時間の短縮、荷役（積み下ろし）時間の短縮、1回に積む量を増やす取り組みの努力義務",
+    "2026年4月からは、一定規模以上の「特定事業者」に中長期計画の作成・提出が義務化されています",
+    "努力義務の段階では罰則はありません"
+  ],
+  penalty:"",
+  note:"ドライバー側から見れば「待たされる時間を減らす」ための法律です。長時間の荷待ちが常態化している現場では、この法律を根拠に改善を求める材料になります。",
+  source:{label:"全日本トラック協会 新物流効率化法", url:"https://jta.or.jp/member/kaisei_jigyoho/top/bukkoho_new.html"}
+},
+{
+  id:"invoice-2023", imp:2,
+  date:"2023-10-01",
+  title:"インボイス制度スタート（消費税）",
+  sub:"登録するかどうかで手取りが変わる、一人親方の分かれ道",
+  who:["軽貨物・運送業"],
+  keywords:"インボイス 適格請求書 消費税 免税事業者 課税事業者 登録番号 2割特例 国税庁",
+  points:[
+    "適格請求書（インボイス）がないと、発注側は支払った消費税を差し引けなくなりました",
+    "登録すると課税事業者になり、消費税の申告・納税が必要になります",
+    "登録しない場合、発注側から消費税相当分の値下げを求められたり、取引を見直されたりするケースがあります",
+    "免税事業者から課税事業者になった人には、納税額を売上税額の2割にできる「2割特例」の経過措置があります"
+  ],
+  penalty:"",
+  note:"道路交通法ではなく税制ですが、軽貨物の一人親方の手取りに最も直接影響した制度変更のため掲載しています。なお、登録しないことを理由に一方的に報酬を減額するのは、フリーランス新法や独占禁止法の問題になり得ます。判断は税理士にご相談ください。",
+  source:{label:"国税庁 インボイス制度特設サイト", url:"https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm"}
+},
+
+/* ───── 道路交通法など、運転者全般に関わる改正 ───── */
+{
+  id:"bicycle-blue-ticket-2026", imp:1,
   date:"2026-04-01",
   title:"自転車にも「青切符」導入（交通反則通知制度）",
   sub:"16歳以上の自転車の違反に反則金。ながらスマホは12,000円",
@@ -258,7 +483,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"new-gentsuki-2025",
+  id:"new-gentsuki-2025", imp:1,
   date:"2025-04-01",
   title:"「新基準原付」誕生 — 125ccでも原付免許でOKに",
   sub:"出力を4kW以下に抑えた125cc以下のバイクが原付一種扱いに",
@@ -274,7 +499,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"myna-license-2025",
+  id:"myna-license-2025", imp:2,
   date:"2025-03-24",
   title:"マイナ免許証スタート",
   sub:"運転免許証とマイナンバーカードの一体化を選べるように",
@@ -290,11 +515,11 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"kei-cargo-safety-2025",
+  id:"kei-cargo-safety-2025", imp:3,
   date:"2025-04-01",
   title:"軽貨物事業者に「貨物軽自動車安全管理者」義務化",
   sub:"黒ナンバー事業者は安全管理者の選任・講習受講が必要に",
-  who:["事業者・運送業"],
+  who:["軽貨物・運送業"],
   keywords:"貨物軽自動車安全管理者 軽貨物 黒ナンバー 講習 選任 事故報告 貨物自動車運送事業法",
   points:[
     "貨物軽自動車運送事業者（黒ナンバー）は、営業所ごとに「貨物軽自動車安全管理者」を選任し、国土交通省への届出が必要に",
@@ -334,7 +559,7 @@ const LAWS = [
   source:{label:"国土交通省 自動車局", url:"https://www.mlit.go.jp/jidosha/index.html"}
 },
 {
-  id:"bicycle-penalty-2024",
+  id:"bicycle-penalty-2024", imp:1,
   date:"2024-11-01",
   title:"自転車の「ながらスマホ」「酒気帯び」に罰則",
   sub:"スマホ見ながら運転で懲役刑もあり得るように",
@@ -367,7 +592,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"moped-2024",
+  id:"moped-2024", imp:1,
   date:"2024-11-01",
   title:"モペット（ペダル付き原付）のルール明確化",
   sub:"ペダルだけで走っても「原付」— 免許・ヘルメット必須",
@@ -402,11 +627,11 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"alcohol-detector-2023",
+  id:"alcohol-detector-2023", imp:2,
   date:"2023-12-01",
   title:"アルコール検知器でのチェック義務化（白ナンバー）",
   sub:"目視だけでなく検知器での酒気帯び確認が必須に",
-  who:["事業者・運送業"],
+  who:["軽貨物・運送業"],
   keywords:"アルコールチェック 検知器 白ナンバー 安全運転管理者 酒気帯び確認",
   points:[
     "安全運転管理者を置く事業所（乗車定員11人以上の車1台以上、またはその他の車5台以上を使用）で、アルコール検知器を使った運転前後の酒気帯び確認が義務化",
@@ -440,7 +665,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"kickboard-2023",
+  id:"kickboard-2023", imp:1,
   date:"2023-07-01",
   title:"電動キックボード新ルール（特定小型原付）",
   sub:"16歳以上なら免許不要で乗れる新しい車両区分が誕生",
@@ -485,7 +710,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"helmet-2023",
+  id:"helmet-2023", imp:1,
   date:"2023-04-01",
   title:"自転車ヘルメット、全年齢で努力義務に",
   sub:"大人もヘルメットをかぶるよう努めることに",
@@ -501,11 +726,11 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"alcohol-check-2022",
+  id:"alcohol-check-2022", imp:2,
   date:"2022-04-01",
   title:"アルコールチェック義務化スタート（白ナンバー）",
   sub:"社用車を使う会社は運転前後の酒気帯び確認と記録が必要に",
-  who:["事業者・運送業"],
+  who:["軽貨物・運送業"],
   keywords:"アルコールチェック 目視 白ナンバー 安全運転管理者 記録 1年保存",
   points:[
     "安全運転管理者を置く事業所で、運転前後の酒気帯び確認（目視等）が義務化",
@@ -540,7 +765,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"elderly-2022",
+  id:"elderly-2022", imp:1,
   date:"2022-05-13",
   title:"高齢ドライバー対策の強化",
   sub:"75歳以上で違反歴のある人に「運転技能検査」",
@@ -555,7 +780,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"aori-2020",
+  id:"aori-2020", imp:2,
   date:"2020-06-30",
   title:"あおり運転（妨害運転罪）の創設",
   sub:"あおり運転は一発で免許取消しに",
@@ -572,7 +797,7 @@ const LAWS = [
   source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
 },
 {
-  id:"nagara-2019",
+  id:"nagara-2019", imp:2,
   date:"2019-12-01",
   title:"「ながら運転」の厳罰化（自動車・バイク)",
   sub:"運転中のスマホ操作は反則金3倍・点数3倍に",
@@ -595,12 +820,16 @@ const todayISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d
 const fmtDate = iso => { const [y,m,d]=iso.split("-"); return `${y}年${+m}月${+d}日`; };
 const daysUntil = iso => Math.ceil((new Date(iso+"T00:00:00") - new Date(new Date().toDateString()))/86400000);
 
-const state = { q:"", who:"all", year:"all" };
+const state = { q:"", who:"all", year:"all", sort:"date" };
+
+/* 軽貨物運送から見た重要度（3=最重要 2=関係あり 1=参考） */
+const IMP_LABEL = {3:"軽貨物に必須", 2:"軽貨物に関係", 1:"参考"};
+const stars = n => "★".repeat(n) + "☆".repeat(3-n);
 
 $("#updDate").textContent = fmtDate(UPDATED);
 
 /* ── フィルタチップ生成 ── */
-const WHO_LIST = ["クルマを運転する人","自転車に乗る人","バイク・原付","事業者・運送業"];
+const WHO_LIST = ["軽貨物・運送業","クルマを運転する人","自転車に乗る人","バイク・原付"];
 function buildChips(){
   const wc = $("#whoChips");
   ["all",...WHO_LIST].forEach(w=>{
@@ -609,6 +838,14 @@ function buildChips(){
     b.textContent = w==="all"?"すべて":w;
     b.onclick=()=>{ state.who=w; [...wc.querySelectorAll(".fchip")].forEach(x=>x.classList.remove("on")); b.classList.add("on"); render(); };
     wc.appendChild(b);
+  });
+  const sc=$("#sortChips");
+  [["date","新しい順"],["imp","軽貨物の重要度順"]].forEach(([k,label])=>{
+    const b=document.createElement("button");
+    b.className="fchip"+(k===state.sort?" on":"");
+    b.textContent=label;
+    b.onclick=()=>{ state.sort=k; [...sc.querySelectorAll(".fchip")].forEach(x=>x.classList.remove("on")); b.classList.add("on"); render(); };
+    sc.appendChild(b);
   });
   const years=[...new Set(LAWS.map(l=>l.date.slice(0,4)))].sort().reverse();
   const yc=$("#yearChips");
@@ -637,10 +874,11 @@ function buildSoon(){
   }
   coming.forEach(l=>{
     const d=daysUntil(l.date);
+    const kind=l.kind||"施行";
     const el=document.createElement("div");
     el.className="soon";
     el.innerHTML=`<div class="cd"><b>${d}</b><span>日後</span></div>
-      <div><div class="dt">${fmtDate(l.date)} 施行予定</div><div class="tt">${l.title}</div></div>`;
+      <div><div class="dt">${fmtDate(l.date)} ${kind==="期限"?"対応期限":"施行予定"}</div><div class="tt">${l.title}</div></div>`;
     el.onclick=()=>{ const c=document.getElementById("law-"+l.id); if(c){ c.open=true; c.scrollIntoView({behavior:"smooth",block:"center"}); } };
     box.appendChild(el);
   });
@@ -660,21 +898,31 @@ function matches(l){
 function render(){
   const tl=$("#timeline"); tl.innerHTML="";
   const t=todayISO();
-  const hits=LAWS.filter(matches).sort((a,b)=>a.date<b.date?1:-1);
+  // 重要度順では、同じ重要度のなかで「まだ対応が必要なもの（未来）」を期限が近い順に先に出す
+  const rank = l => (l.date>=t ? 0 : 1);
+  const hits=LAWS.filter(matches).sort((a,b)=>{
+    if(state.sort!=="imp") return a.date<b.date?1:-1;
+    return (b.imp-a.imp)
+        || (rank(a)-rank(b))
+        || (rank(a)===0 ? (a.date<b.date?-1:1) : (a.date<b.date?1:-1));
+  });
   $("#hitcount").textContent = hits.length ? `${hits.length}件の改正が見つかりました` : "";
   $("#noresult").hidden = hits.length>0;
 
-  let curYear="";
+  let curGroup="";
   hits.forEach(l=>{
-    const y=l.date.slice(0,4);
-    if(y!==curYear){
-      curYear=y;
+    const g = state.sort==="imp" ? "imp"+l.imp : l.date.slice(0,4);
+    if(g!==curGroup){
+      curGroup=g;
       const h=document.createElement("div");
       h.className="yearhead";
-      h.innerHTML=`<span class="y">${y}年</span><span class="rule"></span>`;
+      h.innerHTML = state.sort==="imp"
+        ? `<span class="y">${stars(l.imp)} ${IMP_LABEL[l.imp]}</span><span class="rule"></span>`
+        : `<span class="y">${l.date.slice(0,4)}年</span><span class="rule"></span>`;
       tl.appendChild(h);
     }
     const future = l.date>=t;
+    const kind = l.kind || "施行";
     const card=document.createElement("details");
     card.className="card"+(future?" future":"");
     card.id="law-"+l.id;
@@ -682,12 +930,13 @@ function render(){
     card.innerHTML=`
       <summary>
         <div class="crow">
-          <div class="datebadge"><div class="dy">${future?"施行予定":"施行"}</div><div class="dd">${+m}/${+d}</div></div>
+          <div class="datebadge"><div class="dy">${future?kind+"予定":kind}</div><div class="dd">${+m}/${+d}</div></div>
           <div class="chead">
             <div class="ctitle">${l.title}</div>
             <div class="csub">${l.sub}</div>
             <div class="tags">
-              ${future?'<span class="tag fut">🔜 これから施行</span>':''}
+              ${future?`<span class="tag fut">🔜 これから${kind==="期限"?"対応":"施行"}</span>`:''}
+              ${l.imp===3?'<span class="tag imp">★★★ 軽貨物に必須</span>':''}
               ${l.who.map(w=>`<span class="tag who">${w}</span>`).join("")}
             </div>
             <div class="openhint">▼ タップで詳しく</div>
@@ -791,8 +1040,9 @@ function checkNotify(){
     const key=l.id+":"+ms;
     if(n.done[key]) return;
     n.done[key]=true; saveN(n);
-    const when = d===0?"本日施行":`施行まであと${d}日`;
-    new Notification(`${when}：${l.title}`,{body:`${fmtDate(l.date)} 施行 — ${l.sub}`});
+    const kind=l.kind||"施行";
+    const when = d===0?`本日が${kind}日`:`${kind}まであと${d}日`;
+    new Notification(`${when}：${l.title}`,{body:`${fmtDate(l.date)} ${kind} — ${l.sub}`});
   });
 }
 
