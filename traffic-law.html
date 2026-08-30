@@ -141,6 +141,7 @@ figure.fig{margin:10px 0 0;padding:14px 10px 10px;background:#FAFDFF;
 .cta.off{background:#C9DCE7;box-shadow:none;}
 .nstat{font-size:12.5px;font-weight:bold;}
 .nstat.on{color:var(--ok);}.nstat.ng{color:var(--err);}
+.nstat.info{color:var(--ink);font-weight:normal;line-height:1.8;}
 .banner{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:12px;
   padding:11px 14px;font-size:12.5px;line-height:1.7;margin-top:12px;color:var(--warn-ink);}
 
@@ -231,9 +232,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
       <span class="nstat" id="notifyStat"></span>
     </div>
     <div class="banner">
-      ブラウザ通知は「このページを開いたとき」に届く仕組みです。確実に思い出したい改正は、各カードの
-      「📅 カレンダーに登録」ボタンでスマホのカレンダーに入れておくのがおすすめです（施行7日前と前日に
-      リマインダーが鳴るよう設定済み）。
+      ブラウザ通知は「このページを開いたとき」に届く仕組みです。確実に思い出したい改正は、
+      対応期限のカードにある「📅 Googleカレンダーに登録」ボタンで、スマホのカレンダーに
+      入れておくのがおすすめです。iPhoneでもAndroidでも確実に鳴ります。
     </div>
   </div>
 
@@ -306,8 +307,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
 const UPDATED = "2026-08-30";   // このページの最終更新日
 
 /* ▼ホームページで公開するときは、ここを書き換えてください */
-const OWNER   = "";   // 例: "酒井運送"
-const CONTACT = "";   // 例: "info@example.com" または問い合わせページのURL
+const OWNER   = "酒井運送";
+const CONTACT = "transporter.sakai@gmail.com";
 
 const LAWS = [
 
@@ -1229,7 +1230,14 @@ function refreshNotifyUI(){
     return;
   }
   if(!("Notification" in window)){
-    btn.hidden=true; st.className="nstat ng"; st.textContent="このブラウザは通知に対応していません（カレンダー登録をご利用ください）";
+    // iPhone/iPadのSafariは、ホーム画面に追加したときだけ通知を使える。
+    // 「非対応」と赤字で出すより、使える方法を案内するほうが親切
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+             || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    btn.hidden=true; st.className="nstat info";
+    st.innerHTML = iOS
+      ? "iPhone・iPadでは、このページを<b>ホーム画面に追加</b>すると通知が使えます（共有ボタン → 「ホーム画面に追加」）。<br>すぐに使うなら、下の「Googleカレンダーに登録」が確実です。"
+      : "このブラウザは通知に対応していません。下の「Googleカレンダーに登録」をご利用ください。";
     return;
   }
   if(n.enabled && Notification.permission==="granted"){
