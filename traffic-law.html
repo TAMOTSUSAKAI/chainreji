@@ -505,6 +505,65 @@ const LAWS = [
   source:{label:"全日本トラック協会 新物流効率化法", url:"https://jta.or.jp/member/kaisei_jigyoho/top/bukkoho_new.html"}
 },
 {
+  id:"invoice-keika-2026", imp:3,
+  date:"2026-10-01",
+  title:"インボイスの経過措置が縮小（免税事業者からの仕入れ 80%→70%）",
+  sub:"免税事業者のままだと、取引先が引ける額がまた減ります",
+  who:["軽貨物・運送業"],
+  keywords:"インボイス 経過措置 80% 70% 50% 30% 免税事業者 仕入税額控除 令和8年度税制改正 消費税 値引き 取引先",
+  points:[
+    "インボイスを出せない免税事業者からの仕入れについて、取引先が差し引ける割合が80%から70%に下がります",
+    "令和8年度税制改正で、当初の「80%→50%→0%」から「80%→70%→50%→30%→0%」に細かく刻まれ、完全終了も2029年10月から2031年10月へ2年延びました",
+    "今後の予定：2026年10月〜70%／2028年10月〜50%／2030年10月〜30%／2031年10月〜控除なし",
+    "1つの免税事業者からの年間の仕入れが1億円を超える部分には、この経過措置は使えません",
+    "インボイス登録済みの方には関係ありません（登録していない方の取引先に影響します）"
+  ],
+  penalty:"",
+  note:"インボイス未登録のまま走っている一人親方にとっては、取引先が「差し引けない分」がまた増えるということです。2023年10月と2026年10月は、単価の見直しを持ちかけられやすいタイミングでした。一方で完全終了は2年延びたので、猶予自体は伸びています。登録するかどうかの損得は売上規模と取引先によって変わるので、税理士にご相談ください。",
+  fig:{
+    cap:"免税事業者からの仕入れについて、取引先が差し引ける割合の推移。2026年10月に80%から70%へ下がります。",
+    svg:`<svg viewBox="0 0 400 250" role="img" aria-label="インボイス経過措置の控除割合が80%から70%、50%、30%、0%へ段階的に下がる推移">
+<line x1="26" y1="176" x2="392" y2="176" stroke="#7C8B96" stroke-width="1.2"/>
+<rect x="30" y="72" width="120" height="104" fill="#EAF6FC" stroke="#006C99"/>
+<text x="90" y="64" text-anchor="middle" font-size="13" font-weight="bold" fill="#006C99">80%</text>
+<rect x="150" y="85" width="80" height="91" fill="#FDF1EF" stroke="#C0392B" stroke-width="1.5"/>
+<text x="190" y="77" text-anchor="middle" font-size="13" font-weight="bold" fill="#C0392B">70%</text>
+<rect x="230" y="111" width="80" height="65" fill="#F7FAFC" stroke="#B9C6CF"/>
+<text x="270" y="103" text-anchor="middle" font-size="12" font-weight="bold" fill="#7C8B96">50%</text>
+<rect x="310" y="137" width="40" height="39" fill="#F7FAFC" stroke="#B9C6CF"/>
+<text x="330" y="129" text-anchor="middle" font-size="12" font-weight="bold" fill="#7C8B96">30%</text>
+<text x="372" y="170" text-anchor="middle" font-size="12" font-weight="bold" fill="#7C8B96">0%</text>
+<text x="30" y="192" font-size="9.5" fill="#7C8B96">2023/10</text>
+<text x="150" y="192" font-size="9.5" font-weight="bold" fill="#C0392B">2026/10</text>
+<text x="230" y="192" font-size="9.5" fill="#7C8B96">2028/10</text>
+<text x="308" y="192" font-size="9.5" fill="#7C8B96">2030/10</text>
+<text x="352" y="205" font-size="9.5" fill="#7C8B96">2031/10〜</text>
+<line x1="150" y1="46" x2="150" y2="176" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="156" y="42" font-size="11" font-weight="bold" fill="#C0392B">ここで80%→70%</text>
+<text x="200" y="228" text-anchor="middle" font-size="11" fill="#20313D">取引先が差し引ける割合（免税事業者からの仕入れ）</text>
+</svg>`
+  },
+  source:{label:"国税庁 インボイス制度特設サイト", url:"https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm"}
+},
+{
+  id:"invoice-2wari-end-2027", imp:3,
+  date:"2027-01-01",
+  title:"2割特例が終わり、個人事業主は「3割特例」へ",
+  sub:"納税額が売上税額の2割から3割に。個人事業主のみの措置です",
+  who:["軽貨物・運送業"],
+  keywords:"2割特例 3割特例 インボイス 消費税 個人事業主 一人親方 簡易課税 令和8年分 令和9年分 納税額",
+  points:[
+    "免税事業者からインボイス発行事業者になった人が使えた「2割特例」は、個人事業主の場合は令和8年分（2026年分・2027年3月申告）が最後です",
+    "そのあと、個人事業主に限り「3割特例」が新設され、令和9年分・令和10年分（2027年・2028年分）に使えます",
+    "3割特例は個人事業主だけで、法人は使えません",
+    "基準期間の売上高が1,000万円を超えて課税事業者になった場合は使えません",
+    "3割特例が終わったあとに備えて、簡易課税制度を選ぶ届出の期限が緩和されています"
+  ],
+  penalty:"",
+  note:"軽貨物の一人親方でインボイス登録している方は、納める消費税が売上にかかる消費税の2割から3割に上がるということです。売上550万円（消費税50万円）なら、10万円だった納税が15万円になる計算。手取りに直接効くので、来年の資金繰りに入れておいてください。簡易課税のほうが有利になる場合もあるため、税理士にご相談を。",
+  source:{label:"国税庁 インボイス制度特設サイト", url:"https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm"}
+},
+{
   id:"invoice-2023", imp:2,
   date:"2023-10-01",
   title:"インボイス制度スタート（消費税）",
@@ -518,7 +577,7 @@ const LAWS = [
     "免税事業者から課税事業者になった人には、納税額を売上税額の2割にできる「2割特例」の経過措置があります"
   ],
   penalty:"",
-  note:"道路交通法ではなく税制ですが、軽貨物の一人親方の手取りに最も直接影響した制度変更のため掲載しています。なお、登録しないことを理由に一方的に報酬を減額するのは、フリーランス新法や独占禁止法の問題になり得ます。判断は税理士にご相談ください。",
+  note:"道路交通法ではなく税制ですが、軽貨物の一人親方の手取りに最も直接影響した制度変更のため掲載しています。開始時の経過措置（免税事業者からの仕入れの80%控除）は2026年10月に70%へ下がります。詳しくは同じ一覧の「インボイスの経過措置が縮小」をご覧ください。なお、登録しないことを理由に一方的に報酬を減額するのは、フリーランス新法や独占禁止法の問題になり得ます。判断は税理士にご相談ください。",
   source:{label:"国税庁 インボイス制度特設サイト", url:"https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm"}
 },
 
