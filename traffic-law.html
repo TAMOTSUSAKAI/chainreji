@@ -7,18 +7,19 @@
 <meta name="description" content="毎年のように変わる道路交通法と運送の制度を、施行日つきの年表で図解つき解説。軽貨物（黒ナンバー）の重要度順に並べ替え、対応期限のカウントダウンと通知も。">
 
 <!-- ============================================================
-     ▼ホームページで公開するときは、この2か所のURLを
-       実際の公開先アドレスに書き換えてください。
-       （書き換えなくても表示・動作に影響はありません）
+     ▼公開先アドレス（設定済み）
+       http://sakai-unsou.main.jp/wp/job/tra/
+       別の場所に置く場合は、下のcanonical・og:url・og:imageの
+       3か所を新しいアドレスに書き換えてください。
      ============================================================ -->
-<link rel="canonical" href="https://example.com/traffic-law.html">
-<meta property="og:url" content="https://example.com/traffic-law.html">
+<link rel="canonical" href="http://sakai-unsou.main.jp/wp/job/tra/">
+<meta property="og:url" content="http://sakai-unsou.main.jp/wp/job/tra/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="道路交通法 改正なび">
 <meta property="og:title" content="道路交通法 改正なび — 軽貨物・ドライバーのための法改正まとめ">
 <meta property="og:description" content="毎年のように変わる交通ルールと運送の制度を、施行日つきの年表で図解つき解説。軽貨物の重要度順に並べ替えられます。">
-<meta property="og:image" content="ogp-traffic-law.png">
+<meta property="og:image" content="http://sakai-unsou.main.jp/wp/job/tra/ogp-traffic-law.png">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="index,follow">
@@ -224,7 +225,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
   <!-- 通知 -->
   <div class="panel" id="notify">
     <h2>🔔 施行日をお知らせ</h2>
-    <p>これから施行される改正について、<b>30日前・7日前・前日/当日</b>に、このページを開いたタイミングでブラウザ通知でお知らせします。</p>
+    <p>これから施行される改正や対応期限について、<b>30日前・7日前・前日/当日</b>に、このページを開いたタイミングでブラウザ通知でお知らせします。</p>
     <div class="notifyrow">
       <button class="cta" id="notifyBtn">通知をオンにする</button>
       <span class="nstat" id="notifyStat"></span>
@@ -1220,6 +1221,13 @@ function saveN(n){ try{ localStorage.setItem(NKEY,JSON.stringify(n)); }catch(e){
 
 function refreshNotifyUI(){
   const n=loadN(), st=$("#notifyStat"), btn=$("#notifyBtn");
+  // ブラウザ通知はhttps（保護された接続）でないと使えない。
+  // http:// で公開されている間は、押しても反応しないボタンを出さずに理由を説明する
+  if(!window.isSecureContext && location.protocol!=="file:"){
+    btn.hidden=true; st.className="nstat ng";
+    st.textContent="ブラウザ通知はhttpsのページでのみ使えます。下のカレンダー登録をご利用ください";
+    return;
+  }
   if(!("Notification" in window)){
     btn.hidden=true; st.className="nstat ng"; st.textContent="このブラウザは通知に対応していません（カレンダー登録をご利用ください）";
     return;
