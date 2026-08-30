@@ -65,6 +65,11 @@ header.hero{background:linear-gradient(180deg,#0090D4,#005E92);color:#fff;
 .soon .tt{font-weight:bold;font-size:14px;line-height:1.5;}
 .soon .dt{font-size:12px;color:var(--future);font-weight:bold;}
 
+/* ── 情報が古いときの警告 ── */
+.stale{background:#FDF1EF;border:1px solid #E9B6AE;border-radius:var(--r);
+  padding:13px 16px;margin-bottom:10px;font-size:13px;line-height:1.7;color:#8A2B20;}
+.stale b{color:var(--err);}
+
 /* ── 検索・フィルタ ── */
 .toolbar{margin:18px 0 6px;}
 .search{display:flex;gap:8px;}
@@ -188,6 +193,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
 </header>
 
 <div class="wrap">
+
+  <!-- 情報が古いときの警告（自動表示） -->
+  <div id="stalebox"></div>
 
   <!-- もうすぐ施行 -->
   <div class="soonbox" id="soonbox"></div>
@@ -1026,6 +1034,21 @@ window.addEventListener("afterprint",()=>{
   printMemo=null;
 });
 $("#printBtn").onclick = () => window.print();
+
+/* 最終更新から半年以上たっていたら、読む人に注意を促す（自動）
+   法改正は毎年あるため、古い早見表をそのまま信じられると危ないため */
+function checkStale(){
+  const months = (new Date() - new Date(UPDATED+"T00:00:00")) / (1000*60*60*24*30.44);
+  if(months < 6) return;
+  const box=$("#stalebox");
+  box.innerHTML = `<div class="stale">
+    <b>⚠ この早見表は最終更新から${Math.floor(months)}か月がたっています。</b><br>
+    そのあとに新しい改正が行われている可能性があります。
+    大事な判断をする前に、下の「最新情報はここで確認」にある
+    警察庁・国土交通省の公式ページで必ず最新の内容をご確認ください。
+  </div>`;
+}
+checkStale();
 
 /* ── フィルタチップ生成 ── */
 const WHO_LIST = ["軽貨物・運送業","クルマを運転する人","自転車に乗る人","バイク・原付"];
