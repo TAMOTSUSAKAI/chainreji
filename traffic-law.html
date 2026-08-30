@@ -3,11 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>道路交通法 改正なび — 毎年の法改正をわかりやすく</title>
-<meta name="description" content="毎年のように変わる道路交通法の改正を、施行日つきの年表でわかりやすく。検索・絞り込み・施行日リマインダー付き。">
+<title>道路交通法 改正なび — 軽貨物・ドライバーのための法改正まとめ</title>
+<meta name="description" content="毎年のように変わる道路交通法と運送の制度を、施行日つきの年表で図解つき解説。軽貨物（黒ナンバー）の重要度順に並べ替え、対応期限のカウントダウンと通知も。">
+
+<!-- ============================================================
+     ▼ホームページで公開するときは、この2か所のURLを
+       実際の公開先アドレスに書き換えてください。
+       （書き換えなくても表示・動作に影響はありません）
+     ============================================================ -->
+<link rel="canonical" href="https://example.com/traffic-law.html">
+<meta property="og:url" content="https://example.com/traffic-law.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="道路交通法 改正なび">
+<meta property="og:title" content="道路交通法 改正なび — 軽貨物・ドライバーのための法改正まとめ">
+<meta property="og:description" content="毎年のように変わる交通ルールと運送の制度を、施行日つきの年表で図解つき解説。軽貨物の重要度順に並べ替えられます。">
+<meta property="og:image" content="ogp-traffic-law.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0090D4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230090D4'/%3E%3Crect x='22' y='10' width='20' height='44' rx='10' fill='%23fff'/%3E%3Ccircle cx='32' cy='21' r='5.5' fill='%23C0392B'/%3E%3Ccircle cx='32' cy='32' r='5.5' fill='%23F0C419'/%3E%3Ccircle cx='32' cy='43' r='5.5' fill='%23149D6F'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap');
 :root{
+  color-scheme:light;
   --bg:#F2F8FC; --card:#FFFFFF; --ink:#20313D; --dim:#7C8B96;
   --sky:#00A3E0; --sky-press:#008BC0; --sky-deep:#006C99;
   --soft:#EAF6FC; --line:#D3E9F4; --ok:#149D6F; --err:#C0392B;
@@ -126,6 +149,32 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
   .crow{gap:10px;}
   .datebadge{min-width:56px;}
 }
+
+/* ── キーボード操作・モーション配慮 ── */
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{
+  outline:3px solid var(--sky-deep);outline-offset:2px;border-radius:8px;}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;
+    scroll-behavior:auto !important;}
+}
+
+/* ── 印刷（チェックリストとして持ち歩く用） ── */
+@media print{
+  body{background:#fff;}
+  .wrap{max-width:none;padding:0;}
+  header.hero{background:#fff !important;color:#000;padding:0 0 12px;
+    text-align:left;border-bottom:2px solid #000;}
+  .hero .kicker,.hero .upd{color:#444;}
+  .hero h1{font-size:20pt;}
+  /* 操作するだけの部品は印刷しない */
+  .toolbar,.soonbox,#notify,.openhint,.icsbtn,.noresult{display:none !important;}
+  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none;border:1px solid #999;}
+  .card > summary{list-style:none;}
+  .fig svg{max-width:340px;}
+  a{text-decoration:none;color:#000;}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#555;word-break:break-all;}
+  .panel{break-inside:avoid;border:1px solid #999;box-shadow:none;}
+}
 </style>
 </head>
 <body>
@@ -201,13 +250,37 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
     </ul>
   </div>
 
+  <!-- 印刷・このサイトについて -->
+  <div class="panel">
+    <h2>🖨 印刷して持ち歩く</h2>
+    <p>絞り込んだ状態で印刷すると、閉じているカードの中身も含めて全文が出ます。
+       「軽貨物・運送業」で絞ってから印刷すれば、事務所に貼る対応チェックリストになります。</p>
+    <div class="notifyrow">
+      <button class="cta" id="printBtn">このページを印刷する</button>
+    </div>
+  </div>
+
+  <div class="panel" id="about">
+    <h2>ℹ️ このページについて</h2>
+    <p><b>運営：</b><span id="ownerName">（運営者名を入れてください）</span></p>
+    <p><b>最終更新：</b><span id="updDate2"></span>／<b>掲載件数：</b><span id="lawCount"></span>件</p>
+    <p><b>お問い合わせ：</b><span id="ownerContact">（連絡先を入れてください）</span></p>
+    <div class="banner">
+      <b>免責事項</b><br>
+      本ページは、道路交通法のほか軽貨物運送に影響の大きい貨物自動車運送事業法・フリーランス新法・
+      労働時間の基準・税制などを、わかりやすさを優先してまとめた<b>非公式の早見表</b>です。
+      官公庁・団体とは関係ありません。反則金額・罰則・対象範囲・経過措置は、事業の形態や車両区分、
+      個別の事情によって異なります。実際の手続きや判断は、必ず上記の一次情報および所轄の運輸支局・
+      労働基準監督署等でご確認いただき、税務は税理士、契約や労務は専門家にご相談ください。
+      本ページの情報を用いて生じた損害について、運営者は責任を負いません。
+    </div>
+  </div>
+
   <footer>
-    ※このページは道路交通法のほか、軽貨物運送に影響の大きい貨物自動車運送事業法・フリーランス新法・
-    労働時間の基準・税制なども含めた目安の早見表です。反則金額・罰則・対象範囲・経過措置は、
-    事業の形態や車両区分によって異なる場合があります。正確な内容は警察庁・国土交通省・厚生労働省・
-    国税庁の公表資料および官報でご確認ください。税務の判断は税理士、契約の判断は専門家にご相談ください。<br>
-    ※「軽貨物の重要度」は、黒ナンバーで働く方にとっての影響の大きさを目安として3段階で示したものです。<br>
-    ※内容の追加・修正は、このHTMLファイル内の「LAWS」というデータ一覧を編集するだけで反映されます。
+    ※「軽貨物の重要度」は、黒ナンバーで働く方にとっての影響の大きさを目安として3段階で示した、
+    本ページ独自の分類です。法令上の区分ではありません。<br>
+    ※内容の追加・修正は、このHTMLファイル内の「LAWS」というデータ一覧を編集するだけで、
+    年表・検索・重要度順・通知のすべてに反映されます。
   </footer>
 
 </div>
@@ -222,6 +295,10 @@ footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
    points / penalty / note: カードを開いたときの詳細
    ============================================================ */
 const UPDATED = "2026-08-30";   // このページの最終更新日
+
+/* ▼ホームページで公開するときは、ここを書き換えてください */
+const OWNER   = "";   // 例: "酒井運送"
+const CONTACT = "";   // 例: "info@example.com" または問い合わせページのURL
 
 const LAWS = [
 
@@ -929,6 +1006,26 @@ const IMP_LABEL = {3:"軽貨物に必須", 2:"軽貨物に関係", 1:"参考"};
 const stars = n => "★".repeat(n) + "☆".repeat(3-n);
 
 $("#updDate").textContent = fmtDate(UPDATED);
+$("#updDate2").textContent = fmtDate(UPDATED);
+$("#lawCount").textContent = LAWS.length;
+if(OWNER)   $("#ownerName").textContent = OWNER;
+if(CONTACT) $("#ownerContact").innerHTML =
+  /^https?:/.test(CONTACT) ? `<a href="${CONTACT}" target="_blank" rel="noopener">${CONTACT}</a>`
+  : (CONTACT.includes("@") ? `<a href="mailto:${CONTACT}">${CONTACT}</a>` : CONTACT);
+/* 印刷するときは全カードを開いて中身を出し、終わったら元の開閉状態に戻す
+   （閉じた <details> の中身はCSSでは印刷できないため、JSで開く） */
+let printMemo=null;
+window.addEventListener("beforeprint",()=>{
+  const cards=[...document.querySelectorAll("details.card")];
+  printMemo=cards.map(c=>c.open);
+  cards.forEach(c=>c.open=true);
+});
+window.addEventListener("afterprint",()=>{
+  if(!printMemo) return;
+  [...document.querySelectorAll("details.card")].forEach((c,i)=>c.open=printMemo[i]);
+  printMemo=null;
+});
+$("#printBtn").onclick = () => window.print();
 
 /* ── フィルタチップ生成 ── */
 const WHO_LIST = ["軽貨物・運送業","クルマを運転する人","自転車に乗る人","バイク・原付"];
@@ -1148,7 +1245,33 @@ function checkNotify(){
   });
 }
 
+/* ── 検索エンジン向けの構造化データ（掲載内容から自動生成） ── */
+function buildJsonLd(){
+  const el=document.createElement("script");
+  el.type="application/ld+json";
+  el.textContent=JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":document.title || "道路交通法 改正なび",
+    "description":document.querySelector('meta[name="description"]')?.content
+      || "道路交通法と軽貨物運送に関わる制度改正のまとめ",
+    "inLanguage":"ja",
+    "dateModified":UPDATED,
+    "mainEntity":{
+      "@type":"ItemList",
+      "name":"道路交通法・運送関連の制度改正一覧",
+      "numberOfItems":LAWS.length,
+      "itemListElement":LAWS.slice().sort((a,b)=>a.date<b.date?1:-1).map((l,i)=>({
+        "@type":"ListItem","position":i+1,"name":l.title,
+        "description":`${fmtDate(l.date)} ${l.kind||"施行"} — ${l.sub}`
+      }))
+    }
+  });
+  document.head.appendChild(el);
+}
+
 /* ── 起動 ── */
+buildJsonLd();
 $("#q").addEventListener("input",e=>{ state.q=e.target.value.trim(); render(); });
 buildChips();
 buildSoon();
