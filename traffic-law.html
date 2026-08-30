@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>道路交通法 改正なび — 毎年の法改正をわかりやすく</title>
+<meta name="description" content="毎年のように変わる道路交通法の改正を、施行日つきの年表でわかりやすく。検索・絞り込み・施行日リマインダー付き。">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap');
+:root{
+  --bg:#F2F8FC; --card:#FFFFFF; --ink:#20313D; --dim:#7C8B96;
+  --sky:#00A3E0; --sky-press:#008BC0; --sky-deep:#006C99;
+  --soft:#EAF6FC; --line:#D3E9F4; --ok:#149D6F; --err:#C0392B;
+  --warn-bg:#FFF7E8; --warn-line:#F0DCB0; --warn-ink:#8A6512;
+  --future:#7B4FC0; --future-soft:#F3EDFC;
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Meiryo","メイリオ","M PLUS 1p",system-ui,sans-serif;
+  line-height:1.7;}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 60px;}
+a{color:var(--sky-deep);}
+
+/* ── ヘッダー ── */
+header.hero{background:linear-gradient(180deg,#0090D4,#005E92);color:#fff;
+  padding:calc(env(safe-area-inset-top) + 34px) 16px 30px;text-align:center;}
+.hero .kicker{font-size:12px;letter-spacing:.3em;opacity:.85;font-weight:bold;}
+.hero h1{margin:6px 0 10px;font-size:26px;letter-spacing:.05em;}
+.hero p{margin:0 auto;max-width:560px;font-size:13.5px;opacity:.92;}
+.hero .upd{margin-top:12px;font-size:11.5px;opacity:.75;}
+
+/* ── もうすぐ施行バナー ── */
+.soonbox{margin-top:-18px;}
+.soon{background:var(--future-soft);border:1px solid #DCCDF2;border-radius:var(--r);
+  padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,60,100,.08);
+  display:flex;gap:12px;align-items:center;cursor:pointer;}
+.soon .cd{flex-shrink:0;text-align:center;background:var(--future);color:#fff;
+  border-radius:12px;padding:6px 10px;min-width:64px;}
+.soon .cd b{display:block;font-size:20px;line-height:1.2;}
+.soon .cd span{font-size:10px;}
+.soon .tt{font-weight:bold;font-size:14px;line-height:1.5;}
+.soon .dt{font-size:12px;color:var(--future);font-weight:bold;}
+
+/* ── 検索・フィルタ ── */
+.toolbar{margin:18px 0 6px;}
+.search{display:flex;gap:8px;}
+.search input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+  font-family:inherit;font-size:15px;background:#fff;color:var(--ink);}
+.search input:focus{outline:2px solid var(--sky);border-color:var(--sky);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.chips .lb{font-size:11.5px;color:var(--dim);font-weight:bold;width:100%;margin-bottom:-2px;}
+.fchip{border:1px solid var(--line);background:#fff;color:var(--dim);border-radius:99px;
+  padding:6px 14px;font-family:inherit;font-size:12.5px;font-weight:bold;cursor:pointer;
+  transition:background .15s;}
+.fchip.on{background:var(--sky);border-color:var(--sky);color:#fff;}
+.hitcount{font-size:12px;color:var(--dim);margin:10px 2px 0;}
+
+/* ── 年表 ── */
+.yearhead{display:flex;align-items:center;gap:12px;margin:26px 0 12px;}
+.yearhead .y{font-size:22px;font-weight:bold;color:var(--sky-deep);letter-spacing:.05em;}
+.yearhead .rule{flex:1;height:1px;background:var(--line);}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  margin-bottom:12px;box-shadow:0 1px 3px rgba(0,108,153,.06);overflow:hidden;}
+.card.future{border-color:#DCCDF2;}
+.card > summary{list-style:none;cursor:pointer;padding:14px 16px;}
+.card > summary::-webkit-details-marker{display:none;}
+.crow{display:flex;gap:12px;align-items:flex-start;}
+.datebadge{flex-shrink:0;text-align:center;background:var(--soft);color:var(--sky-deep);
+  border-radius:12px;padding:7px 8px;min-width:64px;line-height:1.3;}
+.card.future .datebadge{background:var(--future-soft);color:var(--future);}
+.datebadge .dy{font-size:11px;font-weight:bold;}
+.datebadge .dd{font-size:15px;font-weight:bold;}
+.chead{min-width:0;flex:1;}
+.ctitle{font-size:15px;font-weight:bold;line-height:1.5;}
+.csub{font-size:12.5px;color:var(--dim);margin-top:2px;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.tag{font-size:10.5px;font-weight:bold;border-radius:6px;padding:2px 8px;
+  background:var(--soft);color:var(--sky-deep);}
+.tag.who{background:#EDF8F2;color:var(--ok);}
+.tag.fut{background:var(--future-soft);color:var(--future);}
+.openhint{font-size:11px;color:var(--dim);margin-top:8px;}
+details[open] .openhint{display:none;}
+.cbody{padding:0 16px 16px;border-top:1px dashed var(--line);margin:0 0;}
+.cbody h4{font-size:12.5px;color:var(--sky-deep);letter-spacing:.1em;margin:16px 0 6px;}
+.cbody ul{margin:0;padding-left:20px;font-size:13.5px;}
+.cbody li{margin-bottom:5px;}
+.penalty{background:#FDF1EF;border:1px solid #F2D3CE;border-radius:10px;
+  padding:10px 12px;font-size:13px;margin-top:6px;}
+.penalty b{color:var(--err);}
+.srcline{margin-top:14px;font-size:12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.icsbtn{border:1px solid var(--line);background:var(--soft);color:var(--sky-deep);
+  border-radius:8px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;}
+.noresult{text-align:center;color:var(--dim);font-size:13.5px;padding:40px 0;}
+
+/* ── 通知セクション ── */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;margin-top:30px;box-shadow:0 1px 3px rgba(0,108,153,.06);}
+.panel h2{margin:0 0 4px;font-size:17px;color:var(--sky-deep);}
+.panel p{font-size:13px;margin:8px 0;}
+.notifyrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;}
+.cta{border:0;border-radius:12px;background:var(--sky);color:#fff;
+  font-family:inherit;font-size:14px;font-weight:bold;padding:12px 20px;cursor:pointer;
+  box-shadow:0 4px 14px -4px rgba(0,163,224,.5);transition:transform .08s;}
+.cta:active{transform:scale(.97);}
+.cta.off{background:#C9DCE7;box-shadow:none;}
+.nstat{font-size:12.5px;font-weight:bold;}
+.nstat.on{color:var(--ok);}.nstat.ng{color:var(--err);}
+.banner{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:12px;
+  padding:11px 14px;font-size:12.5px;line-height:1.7;margin-top:12px;color:var(--warn-ink);}
+
+/* ── 調べ方・フッター ── */
+.linklist{list-style:none;margin:10px 0 0;padding:0;}
+.linklist li{border-bottom:1px solid var(--soft);padding:10px 2px;font-size:13.5px;}
+.linklist li:last-child{border-bottom:0;}
+.linklist .d{display:block;font-size:12px;color:var(--dim);}
+footer{margin-top:36px;font-size:11.5px;color:var(--dim);line-height:1.9;}
+@media (max-width:420px){
+  .hero h1{font-size:22px;}
+  .crow{gap:10px;}
+  .datebadge{min-width:56px;}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">TRAFFIC LAW GUIDE</div>
+  <h1>道路交通法 改正なび</h1>
+  <p>毎年のように変わる交通ルールを、施行日つきの年表でわかりやすく。<br>
+     クルマ・軽貨物・自転車、あなたに関係する改正だけ絞り込めます。</p>
+  <div class="upd">最終更新日：<span id="updDate"></span>／出典：警察庁・国土交通省・e-Gov法令検索</div>
+</header>
+
+<div class="wrap">
+
+  <!-- もうすぐ施行 -->
+  <div class="soonbox" id="soonbox"></div>
+
+  <!-- 検索・フィルタ -->
+  <div class="toolbar">
+    <div class="search">
+      <input id="q" type="search" placeholder="キーワードで探す（例：自転車 / アルコール / 青切符）" aria-label="改正内容を検索">
+    </div>
+    <div class="chips" id="whoChips">
+      <span class="lb">だれに関係する？</span>
+    </div>
+    <div class="chips" id="yearChips">
+      <span class="lb">施行された年</span>
+    </div>
+    <div class="hitcount" id="hitcount"></div>
+  </div>
+
+  <!-- 年表本体 -->
+  <div id="timeline"></div>
+  <div class="noresult" id="noresult" hidden>条件に合う改正が見つかりませんでした。<br>キーワードや絞り込みを変えてみてください。</div>
+
+  <!-- 通知 -->
+  <div class="panel" id="notify">
+    <h2>🔔 施行日をお知らせ</h2>
+    <p>これから施行される改正について、<b>30日前・7日前・前日/当日</b>に、このページを開いたタイミングでブラウザ通知でお知らせします。</p>
+    <div class="notifyrow">
+      <button class="cta" id="notifyBtn">通知をオンにする</button>
+      <span class="nstat" id="notifyStat"></span>
+    </div>
+    <div class="banner">
+      ブラウザ通知は「このページを開いたとき」に届く仕組みです。確実に思い出したい改正は、各カードの
+      「📅 カレンダーに登録」ボタンでスマホのカレンダーに入れておくのがおすすめです（施行7日前と前日に
+      リマインダーが鳴るよう設定済み）。
+    </div>
+  </div>
+
+  <!-- 最新情報の調べ方 -->
+  <div class="panel">
+    <h2>🔍 最新情報はここで確認</h2>
+    <p>このページは手作業で更新している早見表です。正式な内容・最新の動きは、必ず一次情報でご確認ください。</p>
+    <ul class="linklist">
+      <li><a href="https://www.npa.go.jp/bureau/traffic/index.html" target="_blank" rel="noopener">警察庁 交通局</a>
+        <span class="d">道路交通法改正の解説資料・パンフレットの大元。改正の公式発表はここが最速。</span></li>
+      <li><a href="https://laws.e-gov.go.jp/law/335AC0000000105" target="_blank" rel="noopener">e-Gov法令検索「道路交通法」</a>
+        <span class="d">条文そのもの。施行日ごとの新旧を切り替えて読めます。</span></li>
+      <li><a href="https://www.mlit.go.jp/jidosha/index.html" target="_blank" rel="noopener">国土交通省 自動車局</a>
+        <span class="d">貨物軽自動車運送事業（黒ナンバー）など、運送事業者向けの制度改正はこちら。</span></li>
+      <li><a href="https://jaf.or.jp/common/kuruma-qa/category-construction" target="_blank" rel="noopener">JAF クルマ何でも質問箱</a>
+        <span class="d">改正内容をやさしい言葉で解説。一般ドライバー向けの読み物として便利。</span></li>
+    </ul>
+  </div>
+
+  <footer>
+    ※このページは道路交通法等の改正をわかりやすく紹介する目安の早見表です。反則金額・罰則・対象範囲は
+    地域や車両区分によって異なる場合があります。正確な内容は警察庁・国土交通省の公表資料および官報でご確認ください。<br>
+    ※内容の追加・修正は、このHTMLファイル内の「LAWS」というデータ一覧を編集するだけで反映されます。
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   改正データ（ここを編集すれば年表に反映されます）
+   date: 施行日 (YYYY-MM-DD)
+   who : 対象者タグ（絞り込みチップに使われます）
+   points / penalty / note: カードを開いたときの詳細
+   ============================================================ */
+const UPDATED = "2026-08-30";   // このページの最終更新日
+
+const LAWS = [
+{
+  id:"bicycle-blue-ticket-2026",
+  date:"2026-04-01",
+  title:"自転車にも「青切符」導入（交通反則通知制度）",
+  sub:"16歳以上の自転車の違反に反則金。ながらスマホは12,000円",
+  who:["自転車に乗る人"],
+  keywords:"青切符 反則金 交通反則通知制度 信号無視 一時不停止 ながらスマホ イヤホン 自転車",
+  points:[
+    "16歳以上が自転車で違反をすると、車と同じように反則金（青切符）の対象に。対象となる違反は約110種類",
+    "反則金の例：携帯電話を使いながらの運転 12,000円／信号無視 6,000円／一時不停止・無灯火 5,000円",
+    "酒気帯び運転などの悪質な違反は、これまで通り刑事罰（赤切符）の対象",
+    "ヘルメットの着用は引き続き「努力義務」で、反則金の対象ではありません"
+  ],
+  penalty:"反則金を納めれば刑事罰にはなりませんが、納めないと刑事手続きに進みます。",
+  note:"通勤・配達で自転車を使う人は要注意。特に「ながらスマホ」「イヤホン」「右側通行」「歩道の徐行違反」は取り締まりの重点項目とされています。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"new-gentsuki-2025",
+  date:"2025-04-01",
+  title:"「新基準原付」誕生 — 125ccでも原付免許でOKに",
+  sub:"出力を4kW以下に抑えた125cc以下のバイクが原付一種扱いに",
+  who:["バイク・原付"],
+  keywords:"新基準原付 原付 125cc 4kW 原付免許 排ガス規制 50cc",
+  points:[
+    "総排気量125cc以下でも、最高出力を4.0kW以下に制御した車両は「一般原動機付自転車（原付一種）」として原付免許・普通免許で運転可能に",
+    "背景は排ガス規制強化で従来の50ccエンジンの新車生産が難しくなったこと",
+    "法定最高速度30km/h・二段階右折など、原付一種のルールはこれまで通り適用"
+  ],
+  penalty:"",
+  note:"見た目は125ccクラスでも「新基準原付」のナンバー・表示がある車両は原付扱い。購入時は区分をよく確認しましょう。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"myna-license-2025",
+  date:"2025-03-24",
+  title:"マイナ免許証スタート",
+  sub:"運転免許証とマイナンバーカードの一体化を選べるように",
+  who:["クルマを運転する人"],
+  keywords:"マイナ免許証 マイナンバーカード 免許更新 オンライン講習 一体化",
+  points:[
+    "運転免許証の情報をマイナンバーカードに記録できる制度が開始（希望者のみ・従来の免許証も継続可）",
+    "「マイナ免許証のみ」「従来の免許証のみ」「両方持つ」の3パターンから選択",
+    "マイナ免許証にした優良運転者・一般運転者は、更新時講習をオンラインで受講可能に"
+  ],
+  penalty:"",
+  note:"住所変更のワンストップ化などのメリットがある一方、紛失時の再発行手続きなどは事前に確認を。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"kei-cargo-safety-2025",
+  date:"2025-04-01",
+  title:"軽貨物事業者に「貨物軽自動車安全管理者」義務化",
+  sub:"黒ナンバー事業者は安全管理者の選任・講習受講が必要に",
+  who:["事業者・運送業"],
+  keywords:"貨物軽自動車安全管理者 軽貨物 黒ナンバー 講習 選任 事故報告 貨物自動車運送事業法",
+  points:[
+    "貨物軽自動車運送事業者（黒ナンバー）は、営業所ごとに「貨物軽自動車安全管理者」を選任し、国土交通省への届出が必要に",
+    "安全管理者は指定講習の受講が必要（以後も定期講習あり）",
+    "国交省への事故報告義務、事故記録の保存（3年）、新たに雇うドライバーへの指導・適性診断なども義務化",
+    "施行時にすでに営業している事業者には2年間（2027年3月末まで）の経過措置あり"
+  ],
+  penalty:"選任・届出を怠ると行政処分や罰則の対象になり得ます。",
+  note:"厳密には道路交通法ではなく「貨物自動車運送事業法」の改正ですが、軽貨物ドライバーに影響が大きいため掲載しています。1人親方（個人事業主）も対象です。",
+  source:{label:"国土交通省 自動車局", url:"https://www.mlit.go.jp/jidosha/index.html"}
+},
+{
+  id:"bicycle-penalty-2024",
+  date:"2024-11-01",
+  title:"自転車の「ながらスマホ」「酒気帯び」に罰則",
+  sub:"スマホ見ながら運転で懲役刑もあり得るように",
+  who:["自転車に乗る人"],
+  keywords:"自転車 ながらスマホ 携帯電話 酒気帯び 飲酒運転 罰則強化",
+  points:[
+    "自転車運転中のスマホ使用（通話・画面注視）に罰則：6月以下の懲役または10万円以下の罰金",
+    "スマホ使用で事故などの危険を生じさせた場合：1年以下の懲役または30万円以下の罰金",
+    "自転車の「酒気帯び運転」に新たに罰則：3年以下の懲役または50万円以下の罰金",
+    "酒類を提供した店や同乗者・自転車を貸した人にも罰則あり"
+  ],
+  penalty:"いずれも「反則金」ではなく刑事罰。前科がつく可能性があります。",
+  note:"配達中にスマホでナビを見る場合は、ホルダーに固定して「注視しない」ことが大前提。信号待ちでも道路上での操作は避けるのが安全です。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"moped-2024",
+  date:"2024-11-01",
+  title:"モペット（ペダル付き原付）のルール明確化",
+  sub:"ペダルだけで走っても「原付」— 免許・ヘルメット必須",
+  who:["バイク・原付","自転車に乗る人"],
+  keywords:"モペット ペダル付原動機付自転車 フル電動自転車 免許 ヘルメット",
+  points:[
+    "電動モーターとペダルの両方が付いた「モペット」は、ペダルだけで走行していても原動機付自転車として扱うことが法律で明確化",
+    "運転には免許・ヘルメット・ナンバープレート・自賠責保険が必要",
+    "「自転車のつもりで」歩道走行・ノーヘル運転をすると無免許運転等になるおそれ"
+  ],
+  penalty:"無免許運転は3年以下の懲役または50万円以下の罰金。",
+  note:"通販で「免許不要」をうたうフル電動自転車には要注意。電動アシスト自転車（アシスト比率が基準内）とは別物です。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"alcohol-detector-2023",
+  date:"2023-12-01",
+  title:"アルコール検知器でのチェック義務化（白ナンバー）",
+  sub:"目視だけでなく検知器での酒気帯び確認が必須に",
+  who:["事業者・運送業"],
+  keywords:"アルコールチェック 検知器 白ナンバー 安全運転管理者 酒気帯び確認",
+  points:[
+    "安全運転管理者を置く事業所（乗車定員11人以上の車1台以上、またはその他の車5台以上を使用）で、アルコール検知器を使った運転前後の酒気帯び確認が義務化",
+    "検知器は「常時有効に保持」すること（故障したまま放置はNG）",
+    "確認記録は1年間保存"
+  ],
+  penalty:"安全運転管理者の業務違反は是正命令・公安委員会による解任命令等の対象。",
+  note:"2022年4月に始まった目視等での確認義務に、検知器の使用が追加された形。直行直帰の場合は電話+携帯型検知器での確認も認められています。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"kickboard-2023",
+  date:"2023-07-01",
+  title:"電動キックボード新ルール（特定小型原付）",
+  sub:"16歳以上なら免許不要で乗れる新しい車両区分が誕生",
+  who:["自転車に乗る人","バイク・原付"],
+  keywords:"電動キックボード 特定小型原動機付自転車 免許不要 16歳 20km ヘルメット努力義務",
+  points:[
+    "「特定小型原動機付自転車」という新区分が誕生。最高速度20km/h以下・車体サイズなどの基準を満たす電動キックボード等が対象",
+    "16歳以上なら運転免許不要（16歳未満は運転禁止）",
+    "ナンバープレートと自賠責保険は必要。ヘルメットは努力義務",
+    "最高速度6km/hに制限するモード（特例特定小型）なら一部の歩道も走行可"
+  ],
+  penalty:"信号無視・飲酒運転などは自動車と同様に取り締まり対象。16歳未満に乗らせた提供者にも罰則。",
+  note:"基準を満たさない電動キックボードは従来どおり原付扱い（免許・ヘルメット必須）。購入・レンタル時に区分を確認しましょう。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"helmet-2023",
+  date:"2023-04-01",
+  title:"自転車ヘルメット、全年齢で努力義務に",
+  sub:"大人もヘルメットをかぶるよう努めることに",
+  who:["自転車に乗る人"],
+  keywords:"ヘルメット 努力義務 自転車 着用",
+  points:[
+    "すべての年齢の自転車利用者にヘルメット着用の努力義務",
+    "同乗させる子どもにもかぶらせるよう努める",
+    "罰則はないが、自転車事故の致命傷の多くは頭部。着用で致死率が大きく下がるというデータあり"
+  ],
+  penalty:"",
+  note:"業務で自転車配達をする場合、会社や保険の条件でヘルメット着用が事実上必須になっているケースが増えています。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"alcohol-check-2022",
+  date:"2022-04-01",
+  title:"アルコールチェック義務化スタート（白ナンバー）",
+  sub:"社用車を使う会社は運転前後の酒気帯び確認と記録が必要に",
+  who:["事業者・運送業"],
+  keywords:"アルコールチェック 目視 白ナンバー 安全運転管理者 記録 1年保存",
+  points:[
+    "安全運転管理者を置く事業所で、運転前後の酒気帯び確認（目視等）が義務化",
+    "確認内容を記録し、1年間保存",
+    "対象：白ナンバーで乗車定員11人以上の車を1台以上、またはその他の車を5台以上使用する事業所（自動二輪は1台を0.5台で計算）"
+  ],
+  penalty:"安全運転管理者の未選任は50万円以下の罰金。",
+  note:"緑ナンバー（運送事業者）にはもともと点呼での酒気帯び確認義務があり、これが白ナンバーにも広がった形です。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"elderly-2022",
+  date:"2022-05-13",
+  title:"高齢ドライバー対策の強化",
+  sub:"75歳以上で違反歴のある人に「運転技能検査」",
+  who:["クルマを運転する人"],
+  keywords:"高齢者 運転技能検査 サポカー限定免許 75歳 免許更新",
+  points:[
+    "75歳以上で一定の違反歴がある人は、免許更新時に実車での「運転技能検査」が必要に（不合格だと更新不可）",
+    "衝突被害軽減ブレーキ等を備えた「サポートカー」に限定して運転できる『サポカー限定免許』を新設"
+  ],
+  penalty:"",
+  note:"ご家族に高齢のドライバーがいる場合は、更新時期と違反歴の確認を。限定免許への切り替えは本人の申請で可能です。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"aori-2020",
+  date:"2020-06-30",
+  title:"あおり運転（妨害運転罪）の創設",
+  sub:"あおり運転は一発で免許取消しに",
+  who:["クルマを運転する人","バイク・原付"],
+  keywords:"あおり運転 妨害運転罪 車間距離 幅寄せ 免許取消し",
+  points:[
+    "他の車の通行を妨害する目的での急ブレーキ・車間距離不保持・幅寄せなど10類型を「妨害運転」として厳罰化",
+    "妨害運転：3年以下の懲役または50万円以下の罰金",
+    "高速道路上で停車させるなど著しい危険を生じさせた場合：5年以下の懲役または100万円以下の罰金",
+    "違反すると免許は一発で取消し（欠格期間2〜3年）"
+  ],
+  penalty:"自転車によるあおり行為（14類型）も危険行為として講習の対象。",
+  note:"ドライブレコーダーの映像が立件の決め手になるケースが多数。前後カメラの設置がおすすめです。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+},
+{
+  id:"nagara-2019",
+  date:"2019-12-01",
+  title:"「ながら運転」の厳罰化（自動車・バイク)",
+  sub:"運転中のスマホ操作は反則金3倍・点数3倍に",
+  who:["クルマを運転する人","バイク・原付"],
+  keywords:"ながら運転 携帯電話 スマホ カーナビ注視 反則金 点数",
+  points:[
+    "運転中の携帯電話の保持・使用：違反点数3点、反則金18,000円（普通車）",
+    "スマホ使用等で事故などの交通の危険を生じさせた場合：1年以下の懲役または30万円以下の罰金で即・免許停止レベル（違反点数6点）",
+    "カーナビ画面の注視も対象"
+  ],
+  penalty:"「交通の危険」を生じさせた場合は反則金制度の対象外＝刑事罰。",
+  note:"信号待ちなど完全停止中の操作は対象外ですが、動き出す前に画面から手と目を離す習慣を。",
+  source:{label:"警察庁 交通局", url:"https://www.npa.go.jp/bureau/traffic/index.html"}
+}
+];
+
+/* ============================================================ */
+const $ = s => document.querySelector(s);
+const todayISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const fmtDate = iso => { const [y,m,d]=iso.split("-"); return `${y}年${+m}月${+d}日`; };
+const daysUntil = iso => Math.ceil((new Date(iso+"T00:00:00") - new Date(new Date().toDateString()))/86400000);
+
+const state = { q:"", who:"all", year:"all" };
+
+$("#updDate").textContent = fmtDate(UPDATED);
+
+/* ── フィルタチップ生成 ── */
+const WHO_LIST = ["クルマを運転する人","自転車に乗る人","バイク・原付","事業者・運送業"];
+function buildChips(){
+  const wc = $("#whoChips");
+  ["all",...WHO_LIST].forEach(w=>{
+    const b=document.createElement("button");
+    b.className="fchip"+(w==="all"?" on":"");
+    b.textContent = w==="all"?"すべて":w;
+    b.onclick=()=>{ state.who=w; [...wc.querySelectorAll(".fchip")].forEach(x=>x.classList.remove("on")); b.classList.add("on"); render(); };
+    wc.appendChild(b);
+  });
+  const years=[...new Set(LAWS.map(l=>l.date.slice(0,4)))].sort().reverse();
+  const yc=$("#yearChips");
+  ["all",...years].forEach(y=>{
+    const b=document.createElement("button");
+    b.className="fchip"+(y==="all"?" on":"");
+    b.textContent = y==="all"?"すべて":y+"年";
+    b.onclick=()=>{ state.year=y; [...yc.querySelectorAll(".fchip")].forEach(x=>x.classList.remove("on")); b.classList.add("on"); render(); };
+    yc.appendChild(b);
+  });
+}
+
+/* ── もうすぐ施行バナー ── */
+function buildSoon(){
+  const box=$("#soonbox"); box.innerHTML="";
+  const t=todayISO();
+  const coming=LAWS.filter(l=>l.date>=t).sort((a,b)=>a.date<b.date?-1:1).slice(0,3);
+  if(!coming.length){
+    const el=document.createElement("div");
+    el.className="soon"; el.style.cursor="default";
+    el.innerHTML=`<div class="cd" style="background:var(--ok)"><b>✓</b><span>最新</span></div>
+      <div><div class="tt">いま施行を控えている改正はありません</div>
+      <div style="font-size:12px;color:var(--dim)">新しい改正が決まり次第、ここに施行日カウントダウンが表示されます。</div></div>`;
+    box.appendChild(el);
+    return;
+  }
+  coming.forEach(l=>{
+    const d=daysUntil(l.date);
+    const el=document.createElement("div");
+    el.className="soon";
+    el.innerHTML=`<div class="cd"><b>${d}</b><span>日後</span></div>
+      <div><div class="dt">${fmtDate(l.date)} 施行予定</div><div class="tt">${l.title}</div></div>`;
+    el.onclick=()=>{ const c=document.getElementById("law-"+l.id); if(c){ c.open=true; c.scrollIntoView({behavior:"smooth",block:"center"}); } };
+    box.appendChild(el);
+  });
+}
+
+/* ── 年表描画 ── */
+function matches(l){
+  if(state.who!=="all" && !l.who.includes(state.who)) return false;
+  if(state.year!=="all" && l.date.slice(0,4)!==state.year) return false;
+  if(state.q){
+    const hay=(l.title+" "+l.sub+" "+l.keywords+" "+l.points.join(" ")+" "+(l.note||"")).toLowerCase();
+    if(!state.q.toLowerCase().split(/\s+/).every(w=>hay.includes(w))) return false;
+  }
+  return true;
+}
+
+function render(){
+  const tl=$("#timeline"); tl.innerHTML="";
+  const t=todayISO();
+  const hits=LAWS.filter(matches).sort((a,b)=>a.date<b.date?1:-1);
+  $("#hitcount").textContent = hits.length ? `${hits.length}件の改正が見つかりました` : "";
+  $("#noresult").hidden = hits.length>0;
+
+  let curYear="";
+  hits.forEach(l=>{
+    const y=l.date.slice(0,4);
+    if(y!==curYear){
+      curYear=y;
+      const h=document.createElement("div");
+      h.className="yearhead";
+      h.innerHTML=`<span class="y">${y}年</span><span class="rule"></span>`;
+      tl.appendChild(h);
+    }
+    const future = l.date>=t;
+    const card=document.createElement("details");
+    card.className="card"+(future?" future":"");
+    card.id="law-"+l.id;
+    const [ , m, d]=l.date.split("-");
+    card.innerHTML=`
+      <summary>
+        <div class="crow">
+          <div class="datebadge"><div class="dy">${future?"施行予定":"施行"}</div><div class="dd">${+m}/${+d}</div></div>
+          <div class="chead">
+            <div class="ctitle">${l.title}</div>
+            <div class="csub">${l.sub}</div>
+            <div class="tags">
+              ${future?'<span class="tag fut">🔜 これから施行</span>':''}
+              ${l.who.map(w=>`<span class="tag who">${w}</span>`).join("")}
+            </div>
+            <div class="openhint">▼ タップで詳しく</div>
+          </div>
+        </div>
+      </summary>
+      <div class="cbody">
+        <h4>ポイント</h4>
+        <ul>${l.points.map(p=>`<li>${p}</li>`).join("")}</ul>
+        ${l.penalty?`<h4>罰則・注意</h4><div class="penalty"><b>⚠</b> ${l.penalty}</div>`:""}
+        ${l.note?`<h4>ひとこと解説</h4><p style="font-size:13.5px;margin:0;">${l.note}</p>`:""}
+        <div class="srcline">
+          <span>出典：<a href="${l.source.url}" target="_blank" rel="noopener">${l.source.label}</a></span>
+          ${future?`<button class="icsbtn" data-ics="${l.id}">📅 カレンダーに登録</button>`:""}
+        </div>
+      </div>`;
+    tl.appendChild(card);
+  });
+
+  tl.querySelectorAll("[data-ics]").forEach(b=>{
+    b.onclick=e=>{ e.preventDefault(); downloadICS(LAWS.find(l=>l.id===b.dataset.ics)); };
+  });
+}
+
+/* ── カレンダー登録（.ics） ── */
+function downloadICS(l){
+  const dt=l.date.replaceAll("-","");
+  const next=new Date(l.date+"T00:00:00"); next.setDate(next.getDate()+1);
+  const dtEnd=next.getFullYear()+String(next.getMonth()+1).padStart(2,"0")+String(next.getDate()).padStart(2,"0");
+  const esc=s=>s.replace(/[\\;,]/g,m=>"\\"+m);
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//traffic-law-navi//JP","CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",`UID:${l.id}@traffic-law-navi`,`DTSTART;VALUE=DATE:${dt}`,`DTEND;VALUE=DATE:${dtEnd}`,
+    `SUMMARY:${esc("【施行】"+l.title)}`,`DESCRIPTION:${esc(l.sub+" 詳細: "+l.source.url)}`,
+    "BEGIN:VALARM","TRIGGER:-P7D","ACTION:DISPLAY",`DESCRIPTION:${esc("7日後に施行: "+l.title)}`,"END:VALARM",
+    "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY",`DESCRIPTION:${esc("明日施行: "+l.title)}`,"END:VALARM",
+    "END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));
+  a.download=`sekou-${l.date}.ics`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ── ブラウザ通知 ── */
+const NKEY="trafficLawNotify";
+function loadN(){ try{ return JSON.parse(localStorage.getItem(NKEY))||{enabled:false,done:{}}; }catch(e){ return {enabled:false,done:{}}; } }
+function saveN(n){ try{ localStorage.setItem(NKEY,JSON.stringify(n)); }catch(e){} }
+
+function refreshNotifyUI(){
+  const n=loadN(), st=$("#notifyStat"), btn=$("#notifyBtn");
+  if(!("Notification" in window)){
+    btn.hidden=true; st.className="nstat ng"; st.textContent="このブラウザは通知に対応していません（カレンダー登録をご利用ください）";
+    return;
+  }
+  if(n.enabled && Notification.permission==="granted"){
+    btn.textContent="通知をオフにする"; btn.classList.add("off");
+    st.className="nstat on"; st.textContent="✓ 通知オン（このページを開いたときにお知らせします）";
+  }else if(Notification.permission==="denied"){
+    st.className="nstat ng"; st.textContent="ブラウザの設定で通知がブロックされています";
+    btn.textContent="通知をオンにする"; btn.classList.remove("off");
+  }else{
+    btn.textContent="通知をオンにする"; btn.classList.remove("off");
+    st.className="nstat"; st.textContent="";
+  }
+}
+
+$("#notifyBtn").onclick=async()=>{
+  const n=loadN();
+  if(n.enabled && Notification.permission==="granted"){
+    n.enabled=false; saveN(n); refreshNotifyUI(); return;
+  }
+  const perm=await Notification.requestPermission();
+  if(perm==="granted"){
+    n.enabled=true; saveN(n);
+    new Notification("道路交通法 改正なび",{body:"通知をオンにしました。施行日が近づいたらお知らせします。"});
+    checkNotify();
+  }
+  refreshNotifyUI();
+};
+
+function checkNotify(){
+  const n=loadN();
+  if(!n.enabled || !("Notification" in window) || Notification.permission!=="granted") return;
+  const t=todayISO();
+  LAWS.filter(l=>l.date>=t).forEach(l=>{
+    const d=daysUntil(l.date);
+    let ms=null;
+    if(d===0) ms="today"; else if(d<=1) ms="1d"; else if(d<=7) ms="7d"; else if(d<=30) ms="30d";
+    if(!ms) return;
+    const key=l.id+":"+ms;
+    if(n.done[key]) return;
+    n.done[key]=true; saveN(n);
+    const when = d===0?"本日施行":`施行まであと${d}日`;
+    new Notification(`${when}：${l.title}`,{body:`${fmtDate(l.date)} 施行 — ${l.sub}`});
+  });
+}
+
+/* ── 起動 ── */
+$("#q").addEventListener("input",e=>{ state.q=e.target.value.trim(); render(); });
+buildChips();
+buildSoon();
+render();
+refreshNotifyUI();
+checkNotify();
+setInterval(checkNotify, 60*60*1000);  // ページを開いたままでも1時間ごとに再チェック
+</script>
+</body>
+</html>
