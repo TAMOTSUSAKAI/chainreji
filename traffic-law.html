@@ -1466,7 +1466,28 @@ buildSoon();
 render();
 refreshNotifyUI();
 checkNotify();
-setInterval(checkNotify, 60*60*1000);  // ページを開いたままでも1時間ごとに再チェック
+
+/* 日付が変わったら表示を作り直す。
+   スマホでページを開いたまま夜を越すことがあるため、これがないと
+   翌日になっても「本日施行」の表示が残ってしまう。
+   ・1分ごとに日本時間の日付を見る
+   ・画面に戻ってきたとき（アプリ切り替え・スリープ復帰）も見る
+     ※スマホは裏に回るとタイマーが止まるので、こちらが実質の主役 */
+let shownDate = todayISO();
+function refreshIfDateChanged(){
+  const now = todayISO();
+  if (now === shownDate) return;
+  shownDate = now;
+  buildSoon();
+  render();
+  checkStale();
+  checkNotify();
+}
+setInterval(refreshIfDateChanged, 60*1000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshIfDateChanged();
+});
+setInterval(checkNotify, 60*60*1000);  // 通知の再チェック
 </script>
 </body>
 </html>
